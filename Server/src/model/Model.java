@@ -3,7 +3,7 @@ package model;
 import algorithms.mazeGenerators.Maze3d;
 import algorithms.mazeGenerators.Position;
 import algorithms.search.Solution;
-import presenter.Properties;
+import controller.Properties;
 
 /**
  * Defines what every Model can do.
@@ -19,7 +19,7 @@ public interface Model {
 	 * @param y - the Y dimension.
 	 * @param z - the Z dimension.
 	 */
-	void generate(String name, int x, int y, int z);
+	void generate(String name, int x, int y, int z, String clientId);
 	/**
 	 * Displays a  Maze3d according to its name.
 	 * @param name - the Maze3d name.

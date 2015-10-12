@@ -8,7 +8,8 @@ import java.util.concurrent.Executors;
 import algorithms.mazeGenerators.Maze3d;
 import algorithms.mazeGenerators.Position;
 import algorithms.search.Solution;
-import presenter.Properties;
+import controller.Controller;
+import controller.Properties;
 
 /**
  * represents what every Observable Model should implement or have.
@@ -22,8 +23,7 @@ public abstract class ObservableCommonModel extends Observable implements Model{
 	protected HashMap<String, Position> charPositionMap;			//a name -->> character position map.
 	protected ExecutorService threadPool;					//thread pool to manage all important threads.
 	protected Properties properties;						//system properties.
-	protected MyServer clientServer;
-	protected MyServer managmentServer;
+	protected Controller controller;
 	
 	
 	
@@ -39,11 +39,20 @@ public abstract class ObservableCommonModel extends Observable implements Model{
 		threadPool = Executors.newCachedThreadPool(); //default
 		properties = new Properties();
 		properties.setDefaults();
-		clientServer = new MyServer(properties.getClientPort(), new MazeClientHandler(this),properties.getMaxClients());
-		managmentServer = new MyServer(properties.getManagmentPort(), new ManagmentHandler(),properties.getMaxClients());	
+
 	}
 
 	
+	public Controller getController() {
+		return controller;
+	}
+
+
+	public void setController(Controller controller) {
+		this.controller = controller;
+	}
+
+
 	public Properties getProperties() {
 		return properties;
 	}
