@@ -23,7 +23,7 @@ public class Generate extends CommonCommand {
 		if(s[0].equals("3d") && s[1].equals("maze") && s.length > 5)	//checks the validity of the parameters
 		{
 			try {
-				presenter.getModel().generate(s[2],Integer.parseInt(s[3]),Integer.parseInt(s[4]),Integer.parseInt(s[5]),s[6]);
+				presenter.getModel().generate(s[2],Integer.parseInt(s[3]),Integer.parseInt(s[4]),Integer.parseInt(s[5]));
 			} catch (NumberFormatException e) {
 				
 			//	presenter.getView().displayError("Invalid parameters.");// TODO HANDLE ERRORS

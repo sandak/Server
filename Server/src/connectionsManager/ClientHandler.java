@@ -9,7 +9,7 @@ import controller.Controller;
 public interface ClientHandler {
 	void handleClient(InputStream inFromClient, OutputStream outToClient, String clientId);
 
-	void setController(Controller controller);
+
 
 
 }

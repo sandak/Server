@@ -9,16 +9,13 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.HashMap;
 
+import algorithms.mazeGenerators.Maze3d;
 import controller.Controller;
 import model.Model;
 
-public class MazeClientHandler implements ClientHandler{
-
-	Controller controller;
-	HashMap<String, ClientHandler> clientsMap;
+public class MazeClientHandler extends CommonClientHandler{
 	
 	public MazeClientHandler() {
-		clientsMap = new HashMap<String, ClientHandler>();
 	}
 	
 	@Override
@@ -28,10 +25,11 @@ public class MazeClientHandler implements ClientHandler{
 			PrintWriter out=new PrintWriter(outToClient);
 			String line;
 			while(!(line=in.readLine()).endsWith("exit")){
+				
 					if (line.contains("generate") )
-					controller.generateClientHandler(in,out,clientId);
+						generateProtocol(in,out);
 					if (line.contains("get maze") )
-						controller.getMazeClientHandler(in,out);
+						getMazeProtocol(in,out);
 				}	
 			in.close();
 			out.close();			
@@ -41,13 +39,68 @@ public class MazeClientHandler implements ClientHandler{
 		}
 	}
 
-	@Override
-	public void setController(Controller controller) {
-		this.controller=controller;
+	private void getMazeProtocol(BufferedReader in, PrintWriter out) {
+		try {
+			String name;
+			out.println("what is the maze name?");
+		out.flush();
+			name = in.readLine().split(": ")[1];
+			System.out.println(name);
+			Maze3d maze = controller.getMaze(name);
+			if (maze == null)
+				System.out.println("maze error");
+			else
+				{out.println("sending");
+			out.flush();
+		byte [] buffer = maze.toByteArray();
+		
+		for (byte b : buffer) 
+			out.write((int)b);		
+		out.write(127);
+		out.flush();
+		}} catch (IOException e) {
+			// do nothing
+			e.printStackTrace();
+		}
+		
+		
 	}
 
+	private void generateProtocol(BufferedReader in, PrintWriter out) {
 
-
-
-		
+		try {
+			String parse, name;
+			int x,y,z;
+			out.println("what is the maze name?");
+			out.flush();
+			parse =in.readLine();
+			name = parse.split(": ")[1]	;
+			System.out.println(name);
+			//////////////////
+			out.println("what is the Axis x dimension?");
+			out.flush();
+			parse = in.readLine();
+			System.out.println(parse);
+			x = Integer.parseInt(parse.split(": ")[1]);
+			///////////////////
+			out.println("what is the Axis y dimension?");
+			out.flush();
+			parse = in.readLine();
+			y = Integer.parseInt(parse.split(": ")[1]);
+			//////////////////
+			out.println("what is the Axis z dimension?");
+			out.flush();
+			parse = in.readLine();
+			z = Integer.parseInt(parse.split(": ")[1]);
+			///////////
+			controller.update("generate 3d maze " + name + " " +x +" " + y + " " + z);
+			out.println("ok");
+			System.out.println("ok");
+			out.flush();
+		} catch (IOException e) {
+				//do nothing
+				e.printStackTrace();
+			}
+	}
+			
 }

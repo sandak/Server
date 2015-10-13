@@ -1,14 +1,8 @@
 package controller;
 
-import java.io.BufferedReader;
-import java.io.PrintWriter;
 import java.util.HashMap;
-import java.util.Observable;
-import java.util.Observer;
-
 import algorithms.mazeGenerators.Maze3d;
 import connectionsManager.MyConnectionsManager;
-import connectionsManager.View;
 import model.Model;
 
 /**
@@ -34,21 +28,16 @@ public class Controller {
 		model.setProperties(properties);	//informing the model of the system properties.
 		
 		this.commandMap = new HashMap<String , Command>();		//inserting all the Commands into the map
-		commandMap.put("dir", new Dir(this));
 		commandMap.put("generate", new Generate(this));
 		commandMap.put("display", new Display(this));
 		commandMap.put("save", new Save(this));
 		commandMap.put("load", new Load(this));
-		commandMap.put("maze", new Size(this));
-		commandMap.put("file", new FileSize(this));
 		commandMap.put("solve", new Solve(this));
 		commandMap.put("exit", new Exit(this));
-		commandMap.put("completedTask", new CompletedTask(this));
 		commandMap.put("movementRequest", new MovmentRequest(this));
 		commandMap.put("clue", new Clue(this));
 		commandMap.put("propertiesUpdate", new PropertiesUpdate(this));
-
-						
+					
 		
 	}
 
@@ -122,18 +111,6 @@ public class Controller {
 		
 	}
 
-	public void generateClientHandler(BufferedReader in, PrintWriter out, String clientId) {
-		connectionsMgmt.generateClientHandler(in,out,clientId);
-		
-	}
-
-
-	public void getMazeClientHandler(BufferedReader in, PrintWriter out) {
-		connectionsMgmt.getMazeClientHandler(in,out);
-		
-	}
-
-
 	public Maze3d getMaze(String name) {
 		return model.getMaze(name);
 		
@@ -142,7 +119,7 @@ public class Controller {
 
 	public void start() {
 		try {
-			connectionsMgmt.start();
+			connectionsMgmt.gameServerStart();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -151,11 +128,21 @@ public class Controller {
 	}
 
 
-	public void complete(String string) {
-		connectionsMgmt.complete(string);
+	public void gameServerStop() {
+		connectionsMgmt.gameServerStop();
 		
 	}
-					
+	
+	public void gameServerStart() {
+		connectionsMgmt.gameServerStart();
+		
+	}
+
+
+	public boolean getStatus() {
+		return connectionsMgmt.getGameServerStatus();
+	}
+				
 }
 	
 

@@ -19,7 +19,7 @@ public interface Model {
 	 * @param y - the Y dimension.
 	 * @param z - the Z dimension.
 	 */
-	void generate(String name, int x, int y, int z, String clientId);
+	void generate(String name, int x, int y, int z);
 	/**
 	 * Displays a  Maze3d according to its name.
 	 * @param name - the Maze3d name.

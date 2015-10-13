@@ -73,7 +73,7 @@ public class MyObservableModel extends ObservableCommonModel {
 	}
 
 	@Override
-	public void generate(String name, int x, int y, int z,String clientId) {
+	public void generate(String name, int x, int y, int z) {
 System.out.println("generate");
 		Future<Maze3d> maze = threadPool.submit(new Callable<Maze3d>() {
 
@@ -103,7 +103,7 @@ System.out.println("generate");
 			System.out.println(name + " , " + maze.get());
 			charPositionMap.put(name, maze.get().getEntrance());	//updates the position map with the new starting position.
 			setChanged();
-			notifyObservers("completedTask maze generated " + name + " " + clientId);		//notifying the presenter that the maze was generated.
+			notifyObservers("completedTask maze generated " + name );		//notifying the presenter that the maze was generated.
 		} catch (InterruptedException | ExecutionException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

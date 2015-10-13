@@ -6,44 +6,57 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.net.Socket;
+import algorithms.mazeGenerators.Maze3d;
 
-import controller.Controller;
-
-public class ManagmentHandler implements ClientHandler {
-
-	public ManagmentHandler() {
+public class ManagmentHandler extends CommonClientHandler{
 	
+	public ManagmentHandler() {
 	}
 	
 	@Override
-	public void handleClient(InputStream inFromClient, OutputStream outToClient) {
+	public void handleClient(InputStream inFromClient, OutputStream outToClient, String clientId) {
 		try{
 			BufferedReader in=new BufferedReader(new InputStreamReader(inFromClient));
 			PrintWriter out=new PrintWriter(outToClient);
 			String line;
 			while(!(line=in.readLine()).endsWith("exit")){
-				if(line.equals("get image")){
-					out.println("ok");
-					out.flush();
-					//am.convertToAscii(inFromClient, outToClient);
-					out.println("done");
-					out.flush();
-				}				
-			}
+				
+					if (line.contains("get status") )
+						getStatus(in,out);
+					if (line.contains("start server") )
+						serverStart(in,out);
+					if (line.contains("stop server") )
+						serverStop(in,out);
+				}	
 			in.close();
-			out.close();
+			out.close();			
+			
 		}catch(IOException e){
 			e.printStackTrace();
 		}
 	}
 
-	@Override
-	public void setController(Controller controller) {
-		// TODO Auto-generated method stub
+	private void serverStop(BufferedReader in, PrintWriter out) {
+		controller.gameServerStop();
+		out.println("ok");
 		
 	}
 
+	private void getStatus(BufferedReader in, PrintWriter out) {
+		boolean status = controller.getStatus();
+		if (status == true)
+			out.println("online");
+		else
+			out.println("offline");
+		out.flush();
+		
+	}
+
+	private void serverStart(BufferedReader in, PrintWriter out) {
+		controller.gameServerStart();
+		out.println("ok");
+	}
 
 
+			
 }
