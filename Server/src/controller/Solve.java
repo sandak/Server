@@ -26,7 +26,7 @@ public class Solve extends CommonCommand {
 		}
 		else
 		{
-			presenter.getView().displayError("Missing parameters.");
+			//presenter.getView().displayError("Missing parameters.");
 		}
 	}
 

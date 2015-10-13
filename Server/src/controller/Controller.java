@@ -2,6 +2,8 @@ package controller;
 
 import java.util.HashMap;
 import algorithms.mazeGenerators.Maze3d;
+import algorithms.mazeGenerators.Position;
+import algorithms.search.Solution;
 import connectionsManager.MyConnectionsManager;
 import model.Model;
 
@@ -141,6 +143,11 @@ public class Controller {
 
 	public boolean getStatus() {
 		return connectionsMgmt.getGameServerStatus();
+	}
+
+
+	public Solution<Position> getSolution(String name) {
+		return model.getSolution(name);
 	}
 				
 }
