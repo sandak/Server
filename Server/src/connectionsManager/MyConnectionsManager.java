@@ -27,7 +27,6 @@ public class MyConnectionsManager extends CommonConnectionsManager{
 	volatile boolean gameServerStop;
 	volatile boolean serverStop;
 	protected Properties properties;
-	
 	Thread mainServerThread;
 	Thread mgmtServerThread;
 	
@@ -73,13 +72,15 @@ public class MyConnectionsManager extends CommonConnectionsManager{
 									OutputStream out = someClient.getOutputStream();
 									mgmtHandler.handleClient(in,out,someClient.getInetAddress().getHostAddress());		
 									}catch (IOException e)
-									{}
+									{//do nothing
+										}
+									
 								}
 							});								
 						}
 					}
 					catch (SocketTimeoutException e){
-						System.out.println("no clinet connected...");
+						System.out.println("no admins connected...");
 					} 
 					catch (IOException e) {
 						e.printStackTrace();
@@ -95,6 +96,7 @@ public class MyConnectionsManager extends CommonConnectionsManager{
 
 	@Override
 	public void gameServerStart(){
+		gameServerStop = false;
 		try {
 			gameServer=new ServerSocket(properties.getClientPort());
 			gameServer.setSoTimeout(properties.getTimeOut());
@@ -129,7 +131,7 @@ public class MyConnectionsManager extends CommonConnectionsManager{
 						}
 					}
 					catch (SocketTimeoutException e){
-						System.out.println("no clinet connected...");
+						System.out.println("no client connected...");
 					} 
 					catch (IOException e) {
 						e.printStackTrace();

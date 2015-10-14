@@ -9,11 +9,13 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import algorithms.mazeGenerators.Maze3d;
 import algorithms.mazeGenerators.Position;
 import algorithms.search.Solution;
+import algorithms.search.State;
 import controller.Controller;
 import model.Model;
 
@@ -49,7 +51,7 @@ public class MazeClientHandler extends CommonClientHandler{
 		try {
 			String name,algorithm;
 			out.println("what is the maze name?");
-		out.flush();
+			out.flush();
 			name = in.readLine().split(": ")[1];
 			out.println("what is the algorithm?");
 			out.flush();
@@ -62,11 +64,13 @@ public class MazeClientHandler extends CommonClientHandler{
 				{out.println("sending");
 				out.flush();
 				
-				   ByteArrayOutputStream bos = new ByteArrayOutputStream();
-			        ObjectOutputStream o = new ObjectOutputStream(bos);
-			        o.writeObject(solution);
-			        byte[] buffer =  bos.toByteArray();
-			        
+//				   ByteArrayOutputStream bos = new ByteArrayOutputStream();
+//			        ObjectOutputStream o = new ObjectOutputStream(bos);
+//			        o.writeObject(solution);
+//			        byte[] buffer =  bos.toByteArray();
+				
+				byte[] buffer = toByteArray(solution);
+//			        
 			    	for (byte b : buffer) 
 						out.write((int)b);		
 					out.write(127);
@@ -81,6 +85,18 @@ public class MazeClientHandler extends CommonClientHandler{
 	}
 	
 	
+
+	protected byte[] toByteArray(Solution<Position> solution) {
+		byte[] b=new  byte[3*solution.getArr().size()];
+		ArrayList<State<Position>> arr = solution.getArr();
+		int i =0;
+		for (State<Position> statePosition : arr) {
+			b[i++] = statePosition.getState().toByteArray()[0];
+			b[i++] = statePosition.getState().toByteArray()[1];
+			b[i++] = statePosition.getState().toByteArray()[2];
+		}
+		return b;
+	}
 
 	private void getMazeProtocol(BufferedReader in, PrintWriter out) {
 		try {

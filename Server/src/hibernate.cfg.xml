@@ -1,39 +1,22 @@
-<?xml version='1.0' encoding='utf-8'?>
-<!DOCTYPE hibernate-configuration PUBLIC
-        "-//Hibernate/Hibernate Configuration DTD 3.0//EN"
-        "http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
-
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-configuration PUBLIC "-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+                                         "http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
 <hibernate-configuration>
-
-    <session-factory>
-    
-        <!-- Database connection settings -->
-		  <property name="hibernate.connection.driver_class">com.microsoft.sqlserver.jdbc.SQLServerDriver</property>
+ <session-factory name="">
+  <!-- Database connection settings -->
+  <property name="hibernate.connection.driver_class">com.microsoft.sqlserver.jdbc.SQLServerDriver</property>
   <property name="hibernate.connection.password">Aa123456</property>
   <property name="hibernate.connection.url">jdbc:sqlserver://db.cs.colman.ac.il</property>
   <property name="hibernate.connection.username">sandak</property>
-        
-		
-        <!-- JDBC connection pool (use the built-in) -->
-        <property name="connection.pool_size">1</property>
-
-        <!-- SQL dialect -->
-        <property name="dialect">org.hibernate.dialect.SQLServerDialect</property>
-
-        <!-- Enable Hibernate's current session context -->
-        <property name="current_session_context_class">thread</property>
-
-        <!-- Disable the second-level cache  -->
-        <property name="cache.provider_class">org.hibernate.cache.NoCacheProvider</property>
-
-        <!-- Echo all executed SQL to stdout -->
-        <property name="show_sql">true</property>
-
-    <!--     Drop and re-create the database schema on startup - -change to update
-        <property name="hbm2ddl.auto">create</property>
-		<mapping class="MazeDB"/> -->
-        <mapping resource="MazeDB.hbm.xml"></mapping>
-    </session-factory>
-
+  <!-- JDBC connection pool (use the built-in) -->
+  <property name="connection.pool_size">1</property>
+  <!-- SQL dialect -->
+  <property name="dialect">org.hibernate.dialect.SQLServerDialect</property>
+  <!-- Enable Hibernate's current session context -->
+  <property name="current_session_context_class">thread</property>
+  <!-- Disable the second-level cache  -->
+  <property name="cache.provider_class">org.hibernate.cache.NoCacheProvider</property>
+  <!-- Echo all executed SQL to stdout -->
+  <property name="show_sql">true</property>
+ </session-factory>
 </hibernate-configuration>
-

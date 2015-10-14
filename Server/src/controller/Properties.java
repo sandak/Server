@@ -46,6 +46,7 @@ protected int timeOut;
 		this.clientPort = 5400;
 		this.managmentPort = 4040;
 		this.maxClients = 10;
+		this.timeOut=10*1000;
 	}
 									//--------------REGULAR SETTERS AND GETTERS------------------
 	

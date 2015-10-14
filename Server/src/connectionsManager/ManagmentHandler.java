@@ -39,6 +39,7 @@ public class ManagmentHandler extends CommonClientHandler{
 	private void serverStop(BufferedReader in, PrintWriter out) {
 		controller.gameServerStop();
 		out.println("ok");
+		out.flush();
 		
 	}
 
@@ -48,13 +49,14 @@ public class ManagmentHandler extends CommonClientHandler{
 			out.println("online");
 		else
 			out.println("offline");
-		out.flush();
+			out.flush();
 		
 	}
 
 	private void serverStart(BufferedReader in, PrintWriter out) {
 		controller.gameServerStart();
 		out.println("ok");
+		out.flush();
 	}
 
 

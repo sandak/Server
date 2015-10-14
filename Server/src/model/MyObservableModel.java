@@ -122,41 +122,41 @@ System.out.println("generate");
 			return null;
 		}
 	}
-
-	@Override
-	public void getCrossSectionByX(int index, String name) {
-		Maze3d tmpMaze = mazeMap.get(name);
-
-		if (tmpMaze != null) {
-			// controller.display(arrIntToString(tmpMaze.getCrossSectionByX(index)));
-		} else {
-			// controller.display("Unavailable maze!");
-		}
-	}
-
-	@Override
-	public void getCrossSectionByY(int index, String name) {
-		Maze3d tmpMaze = mazeMap.get(name);
-
-		if (tmpMaze != null) {
-			// controller.display(arrIntToString(tmpMaze.getCrossSectionByY(index)));
-		} else {
-			// controller.display("Unavailable maze!");
-		}
-
-	}
-
-	@Override
-	public void getCrossSectionByZ(int index, String name) {
-		Maze3d tmpMaze = mazeMap.get(name);
-
-		if (tmpMaze != null) {
-			// controller.display(arrIntToString(tmpMaze.getCrossSectionByZ(index)));
-		} else {
-			// controller.display("Unavailable maze!");
-		}
-
-	}
+//
+//	@Override
+//	public void getCrossSectionByX(int index, String name) {
+//		Maze3d tmpMaze = mazeMap.get(name);
+//
+//		if (tmpMaze != null) {
+//			// controller.display(arrIntToString(tmpMaze.getCrossSectionByX(index)));
+//		} else {
+//			// controller.display("Unavailable maze!");
+//		}
+//	}
+//
+//	@Override
+//	public void getCrossSectionByY(int index, String name) {
+//		Maze3d tmpMaze = mazeMap.get(name);
+//
+//		if (tmpMaze != null) {
+//			// controller.display(arrIntToString(tmpMaze.getCrossSectionByY(index)));
+//		} else {
+//			// controller.display("Unavailable maze!");
+//		}
+//
+//	}
+//
+//	@Override
+//	public void getCrossSectionByZ(int index, String name) {
+//		Maze3d tmpMaze = mazeMap.get(name);
+//
+//		if (tmpMaze != null) {
+//			// controller.display(arrIntToString(tmpMaze.getCrossSectionByZ(index)));
+//		} else {
+//			// controller.display("Unavailable maze!");
+//		}
+//
+//	}
 
 	/**
 	 * Converts a dou - dimensional array into a String.
@@ -179,118 +179,74 @@ System.out.println("generate");
 
 		return s;
 	}
+//
+//	@Override
+//	public void save(String name, String fileName) {
+//		Maze3d tmpMaze = mazeMap.get(name);
+//
+//		if (tmpMaze != null) {
+//			try {
+//				MyCompressorOutputStream tmpCompressor = new MyCompressorOutputStream(new FileOutputStream(fileName));
+//				tmpCompressor.write(tmpMaze.toByteArray());
+//				tmpCompressor.close(); // compressing the maze into and writing
+//										// it to the file.
+//				setChanged();
+//				notifyObservers("completedTask save");		//notifying the presenter that the save was completed.
+//				
+//			} catch (FileNotFoundException e) {
+//				setChanged();
+//				notifyObservers("completedTask error '" + fileName + "' is not a valid file name.");	//notifying the presenter that an error has occurred.
+//				
+//			} catch (IOException e) {
+//				setChanged();
+//				notifyObservers("completedTask error IO error.");	//notifying the presenter that an error has occurred.
+//				
+//			}
+//		} else {
+//			setChanged();
+//			notifyObservers("completedTask error '" + name + "' is an unavailable maze");	//notifying the presenter that an error has occurred.
+//			
+//		}
+//	}
 
-	@Override
-	public void save(String name, String fileName) {
-		Maze3d tmpMaze = mazeMap.get(name);
+//	@Override
+//	public void load(String fileName, String name) {
+//		try {
+//			MyDecompressorInputStream tmpDecompressor = new MyDecompressorInputStream(new FileInputStream(fileName));
+//			byte[] buffer = new byte[35 * 35 * 35]; 
+//			if (tmpDecompressor.read(buffer) == -1) {
+//				Maze3d tmpMaze = new Maze3d(buffer);
+//				mazeMap.put(name, tmpMaze);
+//				setChanged();
+//				notifyObservers("completedTask load " + name);	//notifying the presenter that the load was completed.
+//				
+//				tmpDecompressor.close();		//closing resources.
+//				charPositionMap.put(name, tmpMaze.getEntrance());	//updates the charpositionMap for the entrance of the loaded maze.
+//			} else {
+//				setChanged();
+//				notifyObservers("completedTask error The requsted maze is too big!");	//notifying the presenter that an error has occurred.
+//				
+//			}
+//		} catch (FileNotFoundException e) {
+//			setChanged();
+//			notifyObservers("completedTask error wrong file path.");	//notifying the presenter that an error has occurred.
+//			
+//		} catch (IOException e) {
+//			setChanged();
+//			notifyObservers("completedTask error IO error.");		//notifying the presenter that an error has occurred.
+//			
+//		}
+//
+//	}
 
-		if (tmpMaze != null) {
-			try {
-				MyCompressorOutputStream tmpCompressor = new MyCompressorOutputStream(new FileOutputStream(fileName));
-				tmpCompressor.write(tmpMaze.toByteArray());
-				tmpCompressor.close(); // compressing the maze into and writing
-										// it to the file.
-				setChanged();
-				notifyObservers("completedTask save");		//notifying the presenter that the save was completed.
-				
-			} catch (FileNotFoundException e) {
-				setChanged();
-				notifyObservers("completedTask error '" + fileName + "' is not a valid file name.");	//notifying the presenter that an error has occurred.
-				
-			} catch (IOException e) {
-				setChanged();
-				notifyObservers("completedTask error IO error.");	//notifying the presenter that an error has occurred.
-				
-			}
-		} else {
-			setChanged();
-			notifyObservers("completedTask error '" + name + "' is an unavailable maze");	//notifying the presenter that an error has occurred.
-			
-		}
-	}
 
-	@Override
-	public void load(String fileName, String name) {
-		try {
-			MyDecompressorInputStream tmpDecompressor = new MyDecompressorInputStream(new FileInputStream(fileName));
-			byte[] buffer = new byte[35 * 35 * 35]; 
-			if (tmpDecompressor.read(buffer) == -1) {
-				Maze3d tmpMaze = new Maze3d(buffer);
-				mazeMap.put(name, tmpMaze);
-				setChanged();
-				notifyObservers("completedTask load " + name);	//notifying the presenter that the load was completed.
-				
-				tmpDecompressor.close();		//closing resources.
-				charPositionMap.put(name, tmpMaze.getEntrance());	//updates the charpositionMap for the entrance of the loaded maze.
-			} else {
-				setChanged();
-				notifyObservers("completedTask error The requsted maze is too big!");	//notifying the presenter that an error has occurred.
-				
-			}
-		} catch (FileNotFoundException e) {
-			setChanged();
-			notifyObservers("completedTask error wrong file path.");	//notifying the presenter that an error has occurred.
-			
-		} catch (IOException e) {
-			setChanged();
-			notifyObservers("completedTask error IO error.");		//notifying the presenter that an error has occurred.
-			
-		}
-
-	}
-
-	@Override
-	public void mazeSize(String name) {
-
-		Maze3d tempMaze = mazeMap.get(name);
-		if (tempMaze != null) {
-			int size = tempMaze.getxAxis() * tempMaze.getyAxis() * tempMaze.getzAxis() + 9;
-			setChanged();
-			notifyObservers("completedTask mazeSize " + size);		//notifying the presenter that the mazeSize was completed.
-		} else {
-			setChanged();
-			notifyObservers("completedTask error '" + name + "' is unavailable maze");	//notifying the presenter that an error has occurred.
-		}
-
-	}
-
-	@Override
-	public void calculateFileSize(String name) {
-		Maze3d tmpMaze = mazeMap.get(name);
-
-		if (tmpMaze != null) {
-			ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-			MyCompressorOutputStream compress = new MyCompressorOutputStream(buffer);
-			try {
-				compress.write(tmpMaze.toByteArray()); // trying to compress the
-														// maze into the buffer.
-				setChanged();
-				notifyObservers("completedTask fileSize " + name + " " + buffer.size());	//notifying the presenter that the mazeSize was completed.
-			} catch (IOException e) {
-				setChanged();
-				notifyObservers("completedTask error IO error.");		//notifying the presenter that an error has occurred.
-			} finally {
-				try {
-					compress.close(); // closing resources.
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-		} else {
-			setChanged();
-			notifyObservers("completedTask error '" + name + "' is unavailable maze");
-			
-		}
-
-	}
-
-	@Override
-	public void clue(String name, String algorithm) {
-		solve(name, algorithm);
-		setChanged();
-		notifyObservers("completedTask clue " + name);
-
-	}
+//	@Override
+//	public void clue(String name, String algorithm) {
+//		solve(name, algorithm);
+//		setChanged();
+//		notifyObservers("completedTask clue " + name);
+//
+//	}
 
 	@Override
 	public Solution<Position> getSolution(String mazeName) {
@@ -354,98 +310,98 @@ System.out.println("generate");
 		}
 	}
 
-	@Override
-	public Position getCharPosition(String name) {
-		return charPositionMap.get(name);
-	}
-
-	@Override
-	public void MoveUP(String name) {
-		Position current = charPositionMap.get(name);
-		String[] moves = mazeMap.get(name).getPossibleMoves(current);
-		for (String move : moves) {
-			if (move.equals("BACKWARD")) {			//checks if up movement is possible.
-				current.setY(current.getY() - 1);
-				charPositionMap.put(name, current);		//updates the new character position.
-				setChanged();
-				notifyObservers("completedTask movement " + name);	//notifying the presenter that the movement was completed.
-			}
-		}
-	}
-
-	@Override
-	public void MoveDOWN(String name) {
-		Position current = charPositionMap.get(name);
-		String[] moves = mazeMap.get(name).getPossibleMoves(current);
-		for (String move : moves) {
-			if (move.equals("FORWARD")) {		//checks if down movement is possible.
-				current.setY(current.getY() + 1);
-				charPositionMap.put(name, current);	//updates the new character position.
-				setChanged();
-				notifyObservers("completedTask movement " + name);	//notifying the presenter that the movement was completed.
-			}
-		}
-	}
-
-	@Override
-	public void MoveLEFT(String name) {
-		Position current = charPositionMap.get(name);
-		String[] moves = mazeMap.get(name).getPossibleMoves(current);
-		for (String move : moves) {
-			if (move.equals("RIGHT")) {		//checks if left movement is possible.
-				current.setZ(current.getZ() - 1);
-				charPositionMap.put(name, current);	//updates the new character position.
-				setChanged();
-				notifyObservers("completedTask movement " + name);	//notifying the presenter that the movement was completed.
-			}
-		}
-	}
-
-	@Override
-	public void MoveRIGHT(String name) {
-		Position current = charPositionMap.get(name);
-		String[] moves = mazeMap.get(name).getPossibleMoves(current);
-		for (String move : moves) {
-			if (move.equals("LEFT")) {			//checks if right movement is possible.
-				current.setZ(current.getZ() + 1);
-				charPositionMap.put(name, current);	//updates the new character position.
-				setChanged();
-				notifyObservers("completedTask movement " + name);	//notifying the presenter that the movement was completed.
-			}
-		}
-	}
-
-	@Override
-	public void MoveLVLUP(String name) {
-
-		Position current = charPositionMap.get(name);
-
-		String[] moves = mazeMap.get(name).getPossibleMoves(current);
-		for (String move : moves) {	
-			if (move.equals("UP")) {			//checks if level up movement is possible.
-				current.setX(current.getX() + 1);
-				charPositionMap.put(name, current);	//updates the new character position.
-
-				setChanged();
-				notifyObservers("completedTask movement " + name);		//notifying the presenter that the movement was completed.
-
-			}
-		}
-	}
-
-	@Override
-	public void MoveLVLDOWN(String name) {
-		Position current = charPositionMap.get(name);
-		String[] moves = mazeMap.get(name).getPossibleMoves(current);
-		for (String move : moves) {
-			if (move.equals("DOWN")) {		//checks if level down movement is possible.
-				current.setX(current.getX() - 1);
-				charPositionMap.put(name, current);		//updates the new character position.
-				setChanged();
-				notifyObservers("completedTask movement " + name);		//notifying the presenter that the movement was completed.
-			}
-		}
-	}
+//	@Override
+//	public Position getCharPosition(String name) {
+//		return charPositionMap.get(name);
+//	}
+//
+//	@Override
+//	public void MoveUP(String name) {
+//		Position current = charPositionMap.get(name);
+//		String[] moves = mazeMap.get(name).getPossibleMoves(current);
+//		for (String move : moves) {
+//			if (move.equals("BACKWARD")) {			//checks if up movement is possible.
+//				current.setY(current.getY() - 1);
+//				charPositionMap.put(name, current);		//updates the new character position.
+//				setChanged();
+//				notifyObservers("completedTask movement " + name);	//notifying the presenter that the movement was completed.
+//			}
+//		}
+//	}
+//
+//	@Override
+//	public void MoveDOWN(String name) {
+//		Position current = charPositionMap.get(name);
+//		String[] moves = mazeMap.get(name).getPossibleMoves(current);
+//		for (String move : moves) {
+//			if (move.equals("FORWARD")) {		//checks if down movement is possible.
+//				current.setY(current.getY() + 1);
+//				charPositionMap.put(name, current);	//updates the new character position.
+//				setChanged();
+//				notifyObservers("completedTask movement " + name);	//notifying the presenter that the movement was completed.
+//			}
+//		}
+//	}
+//
+//	@Override
+//	public void MoveLEFT(String name) {
+//		Position current = charPositionMap.get(name);
+//		String[] moves = mazeMap.get(name).getPossibleMoves(current);
+//		for (String move : moves) {
+//			if (move.equals("RIGHT")) {		//checks if left movement is possible.
+//				current.setZ(current.getZ() - 1);
+//				charPositionMap.put(name, current);	//updates the new character position.
+//				setChanged();
+//				notifyObservers("completedTask movement " + name);	//notifying the presenter that the movement was completed.
+//			}
+//		}
+//	}
+//
+//	@Override
+//	public void MoveRIGHT(String name) {
+//		Position current = charPositionMap.get(name);
+//		String[] moves = mazeMap.get(name).getPossibleMoves(current);
+//		for (String move : moves) {
+//			if (move.equals("LEFT")) {			//checks if right movement is possible.
+//				current.setZ(current.getZ() + 1);
+//				charPositionMap.put(name, current);	//updates the new character position.
+//				setChanged();
+//				notifyObservers("completedTask movement " + name);	//notifying the presenter that the movement was completed.
+//			}
+//		}
+//	}
+//
+//	@Override
+//	public void MoveLVLUP(String name) {
+//
+//		Position current = charPositionMap.get(name);
+//
+//		String[] moves = mazeMap.get(name).getPossibleMoves(current);
+//		for (String move : moves) {	
+//			if (move.equals("UP")) {			//checks if level up movement is possible.
+//				current.setX(current.getX() + 1);
+//				charPositionMap.put(name, current);	//updates the new character position.
+//
+//				setChanged();
+//				notifyObservers("completedTask movement " + name);		//notifying the presenter that the movement was completed.
+//
+//			}
+//		}
+//	}
+//
+//	@Override
+//	public void MoveLVLDOWN(String name) {
+//		Position current = charPositionMap.get(name);
+//		String[] moves = mazeMap.get(name).getPossibleMoves(current);
+//		for (String move : moves) {
+//			if (move.equals("DOWN")) {		//checks if level down movement is possible.
+//				current.setX(current.getX() - 1);
+//				charPositionMap.put(name, current);		//updates the new character position.
+//				setChanged();
+//				notifyObservers("completedTask movement " + name);		//notifying the presenter that the movement was completed.
+//			}
+//		}
+//	}
 
 	@Override
 	public void solve(String name, String algorithm) {
@@ -510,30 +466,32 @@ System.out.println("generate");
 		}
 	}
 
-	@Override
-	public void solution(String name, String algorithm) {		//this solution uses a timer and a timertask to move the character to the end of 
-																//the maze.
-		solve(name, algorithm);
-		Solution<Position> course = solutionMap.get(name);
 
-		Timer timer = new Timer();
 
-		TimerTask task = new TimerTask() {
-			int i = 0;
-
-			@Override
-			public void run() {
-				if (i == course.getArr().size() - 1)
-					this.cancel();
-
-				charPositionMap.put(name, course.getArr().get(i++).getState());	//setting the new position in the map.
-				setChanged();
-				notifyObservers("completedTask movement " + name);
-			}
-
-		};
-
-		timer.scheduleAtFixedRate(task, 0, 200);		
-
-	}
+//	@Override
+//	public void solution(String name, String algorithm) {		//this solution uses a timer and a timertask to move the character to the end of 
+//																//the maze.
+//		solve(name, algorithm);
+//		Solution<Position> course = solutionMap.get(name);
+//
+//		Timer timer = new Timer();
+//
+//		TimerTask task = new TimerTask() {
+//			int i = 0;
+//
+//			@Override
+//			public void run() {
+//				if (i == course.getArr().size() - 1)
+//					this.cancel();
+//
+//				charPositionMap.put(name, course.getArr().get(i++).getState());	//setting the new position in the map.
+//				setChanged();
+//				notifyObservers("completedTask movement " + name);
+//			}
+//
+//		};
+//
+//		timer.scheduleAtFixedRate(task, 0, 200);		
+//
+//	}
 }

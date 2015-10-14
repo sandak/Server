@@ -22,7 +22,7 @@ public class Solve extends CommonCommand {
 		
 		if(s.length > 1)
 		{
-			presenter.getModel().solution(s[0],s[1]);
+			presenter.getModel().solve(s[0],s[1]);
 		}
 		else
 		{
