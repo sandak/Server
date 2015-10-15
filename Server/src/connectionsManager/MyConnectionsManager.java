@@ -123,7 +123,7 @@ public class MyConnectionsManager extends CommonConnectionsManager {
 									clientsMap.put(someClient.getInetAddress().getHostAddress(), someClient);
 									syncAdmins();
 									clientHandler.handleClient(someClient);
-								
+									//clientsMap.remove(someClient.getInetAddress().getHostAddress());
 								}
 
 							});
@@ -150,49 +150,64 @@ public class MyConnectionsManager extends CommonConnectionsManager {
 	}
 	
 	private void syncAdmins() {
-			for (String string : registeredAdmins) {
-				try {
-					Socket theAdmin = new Socket(string, properties.getUpdatePort());
-					if (properties.isDebug())
-						System.out.println("connected to server!");
-					updateClientsStatusProtocol(theAdmin.getInputStream(),theAdmin.getOutputStream());
-					BufferedReader in=new BufferedReader(new InputStreamReader(theAdmin.getInputStream()));
-					PrintWriter out=new PrintWriter(theAdmin.getOutputStream());
-					out.println("exit");
-					out.flush();
-					in.close();
-					out.close();
-					theAdmin.close();
-				} catch (IOException e) {
-					// do nothing
+		mgmtClientsThreadPool.execute(new Runnable() {
+			
+			@Override
+			public void run() {
+				for (String string : registeredAdmins) {
+					try {
+						Socket theAdmin = new Socket(string, properties.getUpdatePort());
+						if (properties.isDebug())
+							System.out.println("connected to server!");
+						updateClientsStatusProtocol(theAdmin.getInputStream(),theAdmin.getOutputStream());
+						BufferedReader in=new BufferedReader(new InputStreamReader(theAdmin.getInputStream()));
+						PrintWriter out=new PrintWriter(theAdmin.getOutputStream());
+						out.println("exit");
+						out.flush();
+						in.close();
+						out.close();
+						theAdmin.close();
+					} catch (IOException e) {
+						// do nothing
+					}
 				}
-			}
 
-			}
+				}
 
-	private void updateClientsStatusProtocol(InputStream inFromClient, OutputStream outToClient) {
-		try {
-		BufferedReader in=new BufferedReader(new InputStreamReader(inFromClient));
-		PrintWriter out=new PrintWriter(outToClient);
-		out.println("clients push");
-		out.flush();
-		in.readLine();//ready
-		ArrayList<String[]> list = getClientsList();
-		for (String[] strings : list) {
-			out.println(strings.length);
-			for (String string : strings) {
-				out.println(string);
+		private void updateClientsStatusProtocol(InputStream inFromClient, OutputStream outToClient) {
+			try {
+			BufferedReader in=new BufferedReader(new InputStreamReader(inFromClient));
+			PrintWriter out=new PrintWriter(outToClient);
+			out.println("clients push");
+			out.flush();
+			in.readLine();//ready
+			ArrayList<String[]> list = getClientsList();
+			for (String[] strings : list) {
+				for (String string : strings) {
+					System.out.print(string +" ");
+				}
+				System.out.println(" ");
 			}
-			out.println("client end");
-		}
-		out.println("list end");
-		out.flush();
-		in.readLine();//done
-		
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+			for (String[] strings : list) {
+				out.println(strings.length);
+				System.out.println(strings.length);
+				for (String string : strings) {
+					out.println(string);
+				}
+				out.println("client end");
+			}
+			out.println("list end");
+			out.flush();
+			in.readLine();//done
+			
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+				
+			}
+		});	
 		
 	}
 

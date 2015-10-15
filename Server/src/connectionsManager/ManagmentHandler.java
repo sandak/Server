@@ -46,7 +46,8 @@ public class ManagmentHandler extends CommonClientHandler{
 		BufferedReader in=new BufferedReader(new InputStreamReader(socket.getInputStream()));
 		PrintWriter out=new PrintWriter(socket.getOutputStream());
 		controller.register(socket.getInetAddress().getHostAddress());
-		
+		out.println("ok");
+		out.flush();
 		}catch (IOException e)
 		{
 			////

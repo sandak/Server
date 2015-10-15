@@ -25,10 +25,10 @@ public class MazeClientHandler extends CommonClientHandler{
 	}
 	
 	@Override
-	public void handleClient(InputStream inFromClient, OutputStream outToClient, String clientId) {
+	public void handleClient(Socket socket) {
 		try{
-			BufferedReader in=new BufferedReader(new InputStreamReader(inFromClient));
-			PrintWriter out=new PrintWriter(outToClient);
+			BufferedReader in=new BufferedReader(new InputStreamReader(socket.getInputStream()));
+			PrintWriter out=new PrintWriter(socket.getOutputStream());
 			String line;
 			while(!(line=in.readLine()).endsWith("exit")){
 				
