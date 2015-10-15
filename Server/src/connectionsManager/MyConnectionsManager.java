@@ -123,7 +123,7 @@ public class MyConnectionsManager extends CommonConnectionsManager {
 									clientsMap.put(someClient.getInetAddress().getHostAddress(), someClient);
 									syncAdmins();
 									clientHandler.handleClient(someClient);
-									//clientsMap.remove(someClient.getInetAddress().getHostAddress());
+									clientsMap.remove(someClient.getInetAddress().getHostAddress());
 								}
 
 							});
