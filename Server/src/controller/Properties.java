@@ -20,12 +20,12 @@ public class Properties implements Serializable {
 
 	protected int maxThreads; // max threads.
 	protected String ui; // which ui to present.
-	
+
 	////// Server properties /////////
-protected int clientPort;
-protected int managmentPort;
-protected int maxClients;
-protected int timeOut;
+	protected int clientPort;
+	protected int managmentPort;
+	protected int maxClients;
+	protected int timeOut;
 
 	public Properties() {
 		super();
@@ -46,11 +46,10 @@ protected int timeOut;
 		this.clientPort = 5400;
 		this.managmentPort = 4040;
 		this.maxClients = 10;
-		this.timeOut=10*1000;
+		this.timeOut = 10 * 1000;
 	}
-									//--------------REGULAR SETTERS AND GETTERS------------------
-	
-	
+	// --------------REGULAR SETTERS AND GETTERS------------------
+
 	public int getClientPort() {
 		return clientPort;
 	}
@@ -75,8 +74,6 @@ protected int timeOut;
 		this.maxClients = maxClients;
 	}
 
-	
-	
 	public boolean isDebug() {
 		return debugMode;
 	}
@@ -88,7 +85,6 @@ protected int timeOut;
 	public void setDebugMode(boolean debugMode) {
 		this.debugMode = debugMode;
 	}
-
 
 	public void setUi(String ui) {
 		this.ui = ui;

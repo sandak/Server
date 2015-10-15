@@ -2,13 +2,14 @@ package controller;
 
 /**
  * Defines what the Command Exit should do.
+ * 
  * @author Guy Golan & Amit Sandak
  *
  */
 public class Exit extends CommonCommand {
 
-	public Exit(Controller presenter) {	//Ctor
-		super(presenter);
+	public Exit(Controller controller) { // Ctor
+		super(controller);
 	}
 
 	/**
@@ -16,12 +17,11 @@ public class Exit extends CommonCommand {
 	 */
 	@Override
 	public void doCommand(String param) {
-		if(presenter.getProperties().isDebug())
+		if (controller.getProperties().isDebug())
 			System.out.println("PRESENTER EXIT");
-		presenter.getView().exit();					//safely exiting model and view.
-		presenter.getModel().exit();
-		
-		
+		controller.getView().exit(); // safely exiting model and view.
+		controller.getModel().exit();
+
 	}
 
 }

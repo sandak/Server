@@ -96,7 +96,7 @@ public class Controller {
 	}
 	//--------------------------------------------------------------------------------
 	/**
-	 * informing the view and model of the system properties.
+	 * informing the ConnectionsManager and model of the system properties.
 	 * @param prop - properties.
 	 */
 	public void setProperties(Properties prop) {

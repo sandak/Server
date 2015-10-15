@@ -2,8 +2,8 @@ package controller;
 
 public class Clue extends CommonCommand {
 
-	public Clue(Controller presenter) {		//Ctor
-		super(presenter);
+	public Clue(Controller controller) {		//Ctor
+		super(controller);
 	}
 
 	/**
@@ -17,11 +17,11 @@ public class Clue extends CommonCommand {
 		
 		if(s.length > 1)
 		{
-			presenter.getModel().clue(s[0],s[1]);
+			controller.getModel().clue(s[0],s[1]);
 		}
 		else
 		{
-			presenter.getView().displayError("Missing parameters.");
+			controller.getView().displayError("Missing parameters.");
 		}
 	}
 
