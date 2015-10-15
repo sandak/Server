@@ -26,6 +26,7 @@ public class Properties implements Serializable {
 	protected int managmentPort;
 	protected int maxClients;
 	protected int timeOut;
+	protected int updatePort;
 
 	public Properties() {
 		super();
@@ -47,6 +48,7 @@ public class Properties implements Serializable {
 		this.managmentPort = 4040;
 		this.maxClients = 10;
 		this.timeOut = 10 * 1000;
+		this.updatePort = 9003;
 	}
 	// --------------REGULAR SETTERS AND GETTERS------------------
 
@@ -148,6 +150,18 @@ public class Properties implements Serializable {
 
 	public int getTimeOut() {
 		return timeOut;
+	}
+
+	public int getUpdatePort() {
+		return updatePort;
+	}
+
+	public void setTimeOut(int timeOut) {
+		this.timeOut = timeOut;
+	}
+
+	public void setUpdatePort(int updatePort) {
+		this.updatePort = updatePort;
 	}
 
 }

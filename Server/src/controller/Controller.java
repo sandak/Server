@@ -149,6 +149,11 @@ public class Controller {
 	public Solution<Position> getSolution(String name) {
 		return model.getSolution(name);
 	}
+
+
+	public void register(String hostAddress) {
+		connectionsMgmt.register(hostAddress);
+	}
 				
 }
 	

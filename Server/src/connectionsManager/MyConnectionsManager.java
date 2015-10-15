@@ -1,15 +1,21 @@
 package connectionsManager;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+
+import org.hibernate.mapping.Set;
 
 import controller.Controller;
 import controller.Properties;
@@ -23,7 +29,7 @@ public class MyConnectionsManager extends CommonConnectionsManager {
 	ExecutorService threadPool;
 	ExecutorService mgmtClientsThreadPool;
 	volatile HashMap<String, Socket> clientsMap;
-	volatile HashMap<String, Socket> adminsMap;
+	volatile ArrayList<String> registeredAdmins;
 	volatile boolean gameServerStop;
 	volatile boolean serverStop;
 	protected Properties properties;
@@ -36,7 +42,7 @@ public class MyConnectionsManager extends CommonConnectionsManager {
 		this.clientHandler = clientHandler;
 		this.mgmtHandler = mgmtHandler;
 		clientsMap = new HashMap<String, Socket>();
-		adminsMap = new HashMap<String, Socket>();
+		registeredAdmins = new ArrayList<String>();
 
 		mgmtStart();
 	}
@@ -67,15 +73,9 @@ public class MyConnectionsManager extends CommonConnectionsManager {
 							mgmtClientsThreadPool.execute(new Runnable() {
 								@Override
 								public void run() {
-									try {
-										adminsHandled++;
-										System.out.println("\tadmin is connected " + adminsHandled);
-										adminsMap.put(someAdmin.getInetAddress().getHostAddress(), someAdmin);
-										InputStream inFromAdmin = someAdmin.getInputStream();
-										OutputStream outToAdmin = someAdmin.getOutputStream();
-										mgmtHandler.handleClient(inFromAdmin, outToAdmin,someAdmin.getInetAddress().getHostAddress());
-									} catch (IOException e) {// do nothing
-									}
+									adminsHandled++;
+									System.out.println("\tadmin is connected " + adminsHandled);
+									mgmtHandler.handleClient(someAdmin);
 
 								}
 							});
@@ -118,17 +118,14 @@ public class MyConnectionsManager extends CommonConnectionsManager {
 							threadPool.execute(new Runnable() {
 								@Override
 								public void run() {
-									try {
-										clientsHandled++;
-										System.out.println("\thandling client " + clientsHandled);
-										clientsMap.put(someClient.getInetAddress().getHostAddress(), someClient);
-										InputStream in = someClient.getInputStream();
-										OutputStream out = someClient.getOutputStream();
-										clientHandler.handleClient(in, out,someClient.getInetAddress().getHostAddress());
-									} catch (IOException e) {
-										e.printStackTrace();
-									}
+									clientsHandled++;
+									System.out.println("\thandling client " + clientsHandled);
+									clientsMap.put(someClient.getInetAddress().getHostAddress(), someClient);
+									syncAdmins();
+									clientHandler.handleClient(someClient);
+								
 								}
+
 							});
 						}
 					} catch (SocketTimeoutException e) {
@@ -143,6 +140,60 @@ public class MyConnectionsManager extends CommonConnectionsManager {
 
 		mainServerThread.start();
 
+	}
+
+	private ArrayList<String[]> getClientsList() {
+		ArrayList<String[]> list =new ArrayList<String[]>() ;
+		for (String string : clientsMap.keySet()) 
+			list.add(new String[]{string,clientsMap.get(string).getInetAddress().getHostAddress(),clientsMap.get(string).getInetAddress().getHostName()});
+		return list;
+	}
+	
+	private void syncAdmins() {
+			for (String string : registeredAdmins) {
+				try {
+					Socket theAdmin = new Socket(string, properties.getUpdatePort());
+					if (properties.isDebug())
+						System.out.println("connected to server!");
+					updateClientsStatusProtocol(theAdmin.getInputStream(),theAdmin.getOutputStream());
+					BufferedReader in=new BufferedReader(new InputStreamReader(theAdmin.getInputStream()));
+					PrintWriter out=new PrintWriter(theAdmin.getOutputStream());
+					out.println("exit");
+					out.flush();
+					in.close();
+					out.close();
+					theAdmin.close();
+				} catch (IOException e) {
+					// do nothing
+				}
+			}
+
+			}
+
+	private void updateClientsStatusProtocol(InputStream inFromClient, OutputStream outToClient) {
+		try {
+		BufferedReader in=new BufferedReader(new InputStreamReader(inFromClient));
+		PrintWriter out=new PrintWriter(outToClient);
+		out.println("clients push");
+		out.flush();
+		in.readLine();//ready
+		ArrayList<String[]> list = getClientsList();
+		for (String[] strings : list) {
+			out.println(strings.length);
+			for (String string : strings) {
+				out.println(string);
+			}
+			out.println("client end");
+		}
+		out.println("list end");
+		out.flush();
+		in.readLine();//done
+		
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 	}
 
 	@Override
@@ -225,6 +276,11 @@ public class MyConnectionsManager extends CommonConnectionsManager {
 
 	public boolean getGameServerStatus() {
 		return !gameServerStop;
+	}
+
+	public void register(String hostAddress) {
+		registeredAdmins.add(hostAddress);
+		
 	}
 
 }

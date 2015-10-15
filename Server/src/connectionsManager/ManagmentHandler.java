@@ -6,6 +6,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.net.Socket;
+
 import algorithms.mazeGenerators.Maze3d;
 
 public class ManagmentHandler extends CommonClientHandler{
@@ -14,10 +16,11 @@ public class ManagmentHandler extends CommonClientHandler{
 	}
 	
 	@Override
-	public void handleClient(InputStream inFromClient, OutputStream outToClient, String clientId) {
+	public void handleClient(Socket socket) {
 		try{
-			BufferedReader in=new BufferedReader(new InputStreamReader(inFromClient));
-			PrintWriter out=new PrintWriter(outToClient);
+			
+			BufferedReader in=new BufferedReader(new InputStreamReader(socket.getInputStream()));
+			PrintWriter out=new PrintWriter(socket.getOutputStream());
 			String line;
 			while(!(line=in.readLine()).endsWith("exit")){
 				
@@ -27,12 +30,26 @@ public class ManagmentHandler extends CommonClientHandler{
 						serverStart(in,out);
 					if (line.contains("stop server") )
 						serverStop(in,out);
+					if (line.contains("register") )
+						register(socket);
 				}	
 			in.close();
 			out.close();			
 			
 		}catch(IOException e){
 			e.printStackTrace();
+		}
+	}
+
+	private void register(Socket socket) {
+		try{
+		BufferedReader in=new BufferedReader(new InputStreamReader(socket.getInputStream()));
+		PrintWriter out=new PrintWriter(socket.getOutputStream());
+		controller.register(socket.getInetAddress().getHostAddress());
+		
+		}catch (IOException e)
+		{
+			////
 		}
 	}
 

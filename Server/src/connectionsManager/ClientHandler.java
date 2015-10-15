@@ -7,7 +7,7 @@ import java.net.Socket;
 import controller.Controller;
 
 public interface ClientHandler {
-	void handleClient(InputStream inFromClient, OutputStream outToClient, String clientId);
+	void handleClient(Socket socket);
 
 
 
