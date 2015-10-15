@@ -18,7 +18,7 @@ public class MyConnectionsManager extends CommonConnectionsManager{
 
 	ServerSocket gameServer;
 	ServerSocket mgmtServer;
-	CommonClientHandler clinetHandler;
+	CommonClientHandler clientHandler;
 	CommonClientHandler mgmtHandler;
 	ExecutorService threadPool;
 	ExecutorService mgmtClientsThreadPool;
@@ -30,10 +30,10 @@ public class MyConnectionsManager extends CommonConnectionsManager{
 	Thread mainServerThread;
 	Thread mgmtServerThread;
 	
-	public MyConnectionsManager(CommonClientHandler clinetHandler,CommonClientHandler mgmtHandler) {
+	public MyConnectionsManager(CommonClientHandler clientHandler,CommonClientHandler mgmtHandler) {
 		this.properties=new Properties();
 		properties.setDefaults();
-		this.clinetHandler=clinetHandler;
+		this.clientHandler=clientHandler;
 		this.mgmtHandler = mgmtHandler;
 		clientsMap = new HashMap<String, Socket>();
 		adminsMap = new HashMap<String, Socket>();
@@ -123,7 +123,7 @@ public class MyConnectionsManager extends CommonConnectionsManager{
 									clientsMap.put(someClient.getInetAddress().getHostAddress(), someClient);
 									InputStream in = someClient.getInputStream();
 									OutputStream out = someClient.getOutputStream();
-									clinetHandler.handleClient(in,out,someClient.getInetAddress().getHostAddress());		
+									clientHandler.handleClient(in,out,someClient.getInetAddress().getHostAddress());		
 									}catch (IOException e)
 									{}
 								}
@@ -218,7 +218,7 @@ public class MyConnectionsManager extends CommonConnectionsManager{
 	@Override
 	public void setController(Controller controller) {
 		this.controller = controller;
-		this.clinetHandler.setController(controller);
+		this.clientHandler.setController(controller);
 		this.mgmtHandler.setController(controller);
 		
 	}
