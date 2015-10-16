@@ -28,6 +28,7 @@ import algorithms.search.MazeManhattanDistance;
 import algorithms.search.Searcher;
 import algorithms.search.Solution;
 import algorithms.search.State;
+import controller.Controller;
 
 /**
  *
@@ -57,14 +58,14 @@ public class MyObservableModel extends ObservableCommonModel {
 			solutionMap = (HashMap<String, Solution<Position>>) oos.readObject();
 		} catch (IOException | ClassNotFoundException e) {
 			if (properties.isDebug())
-				System.out.println("starting from scratch maps");
+				System.out.println("log:starting from scratch maps");
 		} finally {
 			try {
 				if (oos != null) // closing resources.
 					oos.close();
 			} catch (IOException e) {
 				if (properties.isDebug())
-					System.out.println("failed to close resources.");
+					System.out.println("log:failed to close resources.");
 				e.printStackTrace();
 			}
 		}
@@ -79,7 +80,8 @@ public class MyObservableModel extends ObservableCommonModel {
 
 	@Override
 	public void generate(String name, int x, int y, int z) {
-System.out.println("generate");
+		if(controller!=null)
+			this.controller.syncAdmins("log:generate algorithm started - " + name+" " +x+" "+y+ " "+z); 
 		Future<Maze3d> maze = threadPool.submit(new Callable<Maze3d>() {
 
 			@Override
@@ -108,6 +110,7 @@ System.out.println("generate");
 			System.out.println(name + " , " + maze.get());
 			charPositionMap.put(name, maze.get().getEntrance());	//updates the position map with the new starting position.
 			setChanged();
+			controller.syncAdmins("log:generate algorithm ended - " + name+" " +x+" "+y+ " "+z);
 			notifyObservers("completedTask maze generated " + name );		//notifying the presenter that the maze was generated.
 		} catch (InterruptedException | ExecutionException e) {
 			// do nothing
@@ -118,7 +121,7 @@ System.out.println("generate");
 
 	protected void saveCash() {
 		if(properties.isDebug()==true)
-			System.out.println("saving cash.");
+			controller.syncAdmins("log:saving cash.");
 	ObjectOutputStream oos = null;
 	try {
 		oos = new ObjectOutputStream(new GZIPOutputStream(new FileOutputStream("solutionMap.zip")));
@@ -211,7 +214,7 @@ System.out.println("generate");
 			if (!threadPool.awaitTermination(5, TimeUnit.SECONDS)) {
 				threadPool.shutdownNow();
 				if (properties.isDebugMode())
-					System.out.println("threads terminated violently!");
+					controller.syncAdmins("log:threads terminated violently!");
 			}
 			
 			
@@ -226,6 +229,7 @@ System.out.println("generate");
 	public void solve(String name, String algorithm) {
 		if(solutionMap.get(mazeMap.get(name).toString())==null){			
 		try {
+			controller.syncAdmins("log:solve algorithm started - "+name+ ", "+algorithm);
 			Future<Solution<Position>> solution = threadPool.submit((new Callable<Solution<Position>>() {
 
 				@Override
@@ -261,7 +265,7 @@ System.out.println("generate");
 
 			solutionMap.put(mazeMap.get(name).toString(), solution.get()); // inserting the Solution
 													// into the solution map.
-
+			controller.syncAdmins("log:solve algorithm ended - "+name+ ", "+algorithm);
 		} catch (IllegalArgumentException t) {		//catching the exception and notifying the presenter accordingly.
 			setChanged();
 			switch (t.getMessage()) {
@@ -275,16 +279,18 @@ System.out.println("generate");
 
 		} catch (InterruptedException e) {
 			if (properties.isDebug()) {
-				System.out.println("solve method interupted:");
+				controller.syncAdmins("log:solve method interupted.");
 				e.printStackTrace();
 			}
 		} catch (ExecutionException e) {
 			if (properties.isDebug()) {
-				System.out.println("solve method general error:");
+				controller.syncAdmins("log:solve method general error.");
 				e.printStackTrace();
 			}
 		}
 		}
 	}
+
+
 
 }

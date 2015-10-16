@@ -27,6 +27,8 @@ public class ManagmentHandler extends CommonClientHandler{
 				
 					if (line.contains("get status") )
 						getStatus(in,out);
+					if (line.contains("get data") )
+						getData(socket);
 					if (line.contains("start server") )
 						serverStart(in,out);
 					if (line.contains("stop server") )
@@ -44,6 +46,25 @@ public class ManagmentHandler extends CommonClientHandler{
 		}catch(IOException e){
 			e.printStackTrace();
 		}
+	}
+
+	private void getData(Socket socket) {
+		
+		
+		try{
+			BufferedReader in=new BufferedReader(new InputStreamReader(socket.getInputStream()));
+			PrintWriter out=new PrintWriter(socket.getOutputStream());
+			out.println("ok");
+			out.flush();
+			controller.syncAdmin("clients",socket.getInetAddress().getHostAddress());
+			controller.syncAdmin("status",socket.getInetAddress().getHostAddress());
+		
+			
+			
+			}catch (IOException e)
+			{
+				////
+			}			
 	}
 
 	private void kickRequest(Socket socket) {
@@ -92,7 +113,7 @@ public class ManagmentHandler extends CommonClientHandler{
 		{
 			////
 		}
-		controller.syncAdmin(socket.getInetAddress().getHostAddress());
+		controller.syncAdmin("clients",socket.getInetAddress().getHostAddress());
 	}
 
 	private void serverStop(BufferedReader in, PrintWriter out) {
@@ -118,7 +139,24 @@ public class ManagmentHandler extends CommonClientHandler{
 		out.flush();
 	}
 
-
+	public void updateLogProtocol(String string, InputStream inputStream, OutputStream outputStream)
+	{
+		try {
+			BufferedReader in=new BufferedReader(new InputStreamReader(inputStream));
+			PrintWriter out=new PrintWriter(outputStream);
+			out.println("log push");
+			out.flush();
+			in.readLine();//ready
+			out.println(string);
+			out.flush();
+			in.readLine();//done
+			
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}	
+	}
+	
 	public void updateClientsStatusProtocol(InputStream inputStream, OutputStream outputStream) {
 		try {
 			BufferedReader in=new BufferedReader(new InputStreamReader(inputStream));
@@ -150,4 +188,27 @@ public class ManagmentHandler extends CommonClientHandler{
 				e.printStackTrace();
 			}	
 			}
+
+	public void updateStatusProtocol(InputStream inputStream, OutputStream outputStream) {
+		try {
+			BufferedReader in=new BufferedReader(new InputStreamReader(inputStream));
+			PrintWriter out=new PrintWriter(outputStream);
+			out.println("status push");
+			out.flush();
+			in.readLine();//ready
+			boolean status = controller.getStatus();
+			if (status == true)
+				out.println("online");
+			else
+				out.println("offline");
+				out.flush();
+			out.flush();
+			in.readLine();//done
+			
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		
+	}
 }

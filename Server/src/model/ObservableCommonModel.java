@@ -47,7 +47,7 @@ public abstract class ObservableCommonModel extends Observable implements Model{
 		return controller;
 	}
 
-
+@Override
 	public void setController(Controller controller) {
 		this.controller = controller;
 	}

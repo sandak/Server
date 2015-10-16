@@ -96,6 +96,7 @@ public class MyConnectionsManager extends CommonConnectionsManager {
 
 	@Override
 	public void gameServerStart() {
+		syncAdmins("log:game service started.");
 		gameServerStop = false;
 		try {
 			gameServer = new ServerSocket(properties.getClientPort());
@@ -121,10 +122,12 @@ public class MyConnectionsManager extends CommonConnectionsManager {
 									clientsHandled++;
 									System.out.println("\thandling client " + clientsHandled);
 									clientsMap.put(someClient.getInetAddress().getHostAddress(), someClient);
-									syncAdmins();
+									syncAdmins("clients");
+									syncAdmins("log:new client connected - " + someClient.getInetAddress().getHostAddress());
 									clientHandler.handleClient(someClient);
 									clientsMap.remove(someClient.getInetAddress().getHostAddress()); 
-									syncAdmins();
+									syncAdmins("clients");
+									syncAdmins("log:client disconnected - "+someClient.getInetAddress().getHostAddress());
 								}
 
 							});
@@ -150,12 +153,24 @@ public class MyConnectionsManager extends CommonConnectionsManager {
 		return list;
 	}
 	
-	public void syncAdmin(String hostAddress) {
+	public void syncAdmin(String param, String hostAddress) {
 		try {
 			Socket theAdmin = new Socket(hostAddress, properties.getUpdatePort());
 			if (properties.isDebug())
 					System.out.println("connected to admin!");
+			switch (param.split(":")[0])
+			{
+			case "clients":
 				((ManagmentHandler)mgmtHandler).updateClientsStatusProtocol(theAdmin.getInputStream(),theAdmin.getOutputStream());
+				break;
+			case "log":
+				((ManagmentHandler)mgmtHandler).updateLogProtocol(param.split(":")[1],theAdmin.getInputStream(),theAdmin.getOutputStream());
+				break;
+			case "status":
+				((ManagmentHandler)mgmtHandler).updateStatusProtocol(theAdmin.getInputStream(),theAdmin.getOutputStream());
+				break;
+			}
+				
 				BufferedReader in=new BufferedReader(new InputStreamReader(theAdmin.getInputStream()));
 				PrintWriter out=new PrintWriter(theAdmin.getOutputStream());
 				out.println("exit");
@@ -170,13 +185,15 @@ public class MyConnectionsManager extends CommonConnectionsManager {
 		}
 		
 	}
-	private void syncAdmins() {
+	
+	
+	public void syncAdmins(String param) {
 		mgmtClientsThreadPool.execute(new Runnable() {
 			
 			@Override
 			public void run() {
 				for (String string : registeredAdmins) {
-				syncAdmin(string);
+				syncAdmin(param,string);
 				}
 
 				}
@@ -189,7 +206,8 @@ public class MyConnectionsManager extends CommonConnectionsManager {
 		try {
 			gameServerStop = true;
 			// do not execute jobs in queue, continue to execute running threads
-			System.out.println("shutting down");
+			//System.out.println("shutting down");
+			syncAdmins("log:shutting down game service");
 			threadPool.shutdown();
 			// wait 10 seconds over and over again until all running jobs have
 			// finished
@@ -198,13 +216,16 @@ public class MyConnectionsManager extends CommonConnectionsManager {
 			while (!(allTasksCompleted = threadPool.awaitTermination(10, TimeUnit.SECONDS)))
 				
 
-			System.out.println("all the tasks have finished");
+			//System.out.println("all the tasks have finished");
+			syncAdmins("log:all the tasks have finished");
 
 			mainServerThread.join();
-			System.out.println("main server thread is done");
+			//System.out.println("main server thread is done");
+			syncAdmins("log:game service thread is done");
 
 			gameServer.close();
-			System.out.println("game session is safely closed");
+			//System.out.println("game session is safely closed");
+			syncAdmins("log:game session is safely closed");
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -268,19 +289,24 @@ public class MyConnectionsManager extends CommonConnectionsManager {
 
 	public void register(String hostAddress) {
 		registeredAdmins.add(hostAddress);
+		syncAdmins("log:new admin registerd - "+hostAddress);
+		syncAdmin("clients",hostAddress);
 		
 	}
 
 	public void unregister(String hostAddress) {
 		registeredAdmins.remove(hostAddress);
+		syncAdmins("log:admin unregisterd - "+hostAddress);
 		
 	}
 @Override
 	public void kickClients(String[] list) {
+	
 		for (String string : list) {
 			try {
 				System.out.println(string);
 				clientsMap.get(string).close();
+				syncAdmins("log:client kicked - " + string);
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

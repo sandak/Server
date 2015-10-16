@@ -3,6 +3,7 @@ package model;
 import algorithms.mazeGenerators.Maze3d;
 import algorithms.mazeGenerators.Position;
 import algorithms.search.Solution;
+import controller.Controller;
 import controller.Properties;
 
 /**
@@ -57,4 +58,5 @@ public interface Model {
 	void solve(String name, String algorithm);
 		
 	void notifyPresenter(String notify);
+	void setController(Controller controller);
 }

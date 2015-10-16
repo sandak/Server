@@ -76,6 +76,7 @@ public class Controller {
 
 	public void setModel(Model model) {
 		this.model = model;
+		model.setController(this);
 	}
 
 
@@ -166,14 +167,20 @@ public class Controller {
 	}
 
 
-	public void syncAdmin(String hostAddress) {
-		connectionsMgmt.syncAdmin( hostAddress);
+	public void syncAdmin(String param ,String hostAddress) {
+		connectionsMgmt.syncAdmin(param, hostAddress);
 		
 	}
 
 
 	public void kickClients(String[] list) {
 		connectionsMgmt.kickClients(list);
+		
+	}
+
+
+	public void syncAdmins(String string) {
+		connectionsMgmt.syncAdmins(string);
 		
 	}
 				
