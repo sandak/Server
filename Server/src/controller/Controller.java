@@ -1,5 +1,6 @@
 package controller;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import algorithms.mazeGenerators.Maze3d;
 import algorithms.mazeGenerators.Position;
@@ -36,8 +37,6 @@ public class Controller {
 		commandMap.put("load", new Load(this));
 		commandMap.put("solve", new Solve(this));
 		commandMap.put("exit", new Exit(this));
-		commandMap.put("movementRequest", new MovmentRequest(this));
-		commandMap.put("clue", new Clue(this));
 		commandMap.put("propertiesUpdate", new PropertiesUpdate(this));
 					
 		
@@ -153,6 +152,29 @@ public class Controller {
 
 	public void register(String hostAddress) {
 		connectionsMgmt.register(hostAddress);
+	}
+
+
+	public void unregister(String hostAddress) {
+		connectionsMgmt.unregister(hostAddress);
+		
+	}
+
+
+	public ArrayList<String[]> getClientsList() {
+		return connectionsMgmt.getClientsList();
+	}
+
+
+	public void syncAdmin(String hostAddress) {
+		connectionsMgmt.syncAdmin( hostAddress);
+		
+	}
+
+
+	public void kickClients(String[] list) {
+		connectionsMgmt.kickClients(list);
+		
 	}
 				
 }

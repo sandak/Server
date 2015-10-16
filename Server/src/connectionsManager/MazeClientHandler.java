@@ -9,6 +9,7 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -42,9 +43,13 @@ public class MazeClientHandler extends CommonClientHandler{
 			in.close();
 			out.close();			
 			
+		}catch(SocketException e){
+			if (controller.getProperties().isDebug())
+				System.out.println("client kicked!");
 		}catch(IOException e){
 			e.printStackTrace();
 		}
+		
 	}
 
 	private void getSolutionProtocol(BufferedReader in, PrintWriter out) {

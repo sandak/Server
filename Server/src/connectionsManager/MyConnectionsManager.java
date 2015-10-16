@@ -123,7 +123,8 @@ public class MyConnectionsManager extends CommonConnectionsManager {
 									clientsMap.put(someClient.getInetAddress().getHostAddress(), someClient);
 									syncAdmins();
 									clientHandler.handleClient(someClient);
-									clientsMap.remove(someClient.getInetAddress().getHostAddress());
+									clientsMap.remove(someClient.getInetAddress().getHostAddress()); 
+									syncAdmins();
 								}
 
 							});
@@ -142,74 +143,46 @@ public class MyConnectionsManager extends CommonConnectionsManager {
 
 	}
 
-	private ArrayList<String[]> getClientsList() {
+	public ArrayList<String[]> getClientsList() {
 		ArrayList<String[]> list =new ArrayList<String[]>() ;
 		for (String string : clientsMap.keySet()) 
 			list.add(new String[]{string,clientsMap.get(string).getInetAddress().getHostAddress(),clientsMap.get(string).getInetAddress().getHostName()});
 		return list;
 	}
 	
+	public void syncAdmin(String hostAddress) {
+		try {
+			Socket theAdmin = new Socket(hostAddress, properties.getUpdatePort());
+			if (properties.isDebug())
+					System.out.println("connected to admin!");
+				((ManagmentHandler)mgmtHandler).updateClientsStatusProtocol(theAdmin.getInputStream(),theAdmin.getOutputStream());
+				BufferedReader in=new BufferedReader(new InputStreamReader(theAdmin.getInputStream()));
+				PrintWriter out=new PrintWriter(theAdmin.getOutputStream());
+				out.println("exit");
+				out.flush();
+				in.close();
+				out.close();
+				theAdmin.close();
+				
+			
+		} catch (IOException e) {
+			// do nothing
+		}
+		
+	}
 	private void syncAdmins() {
 		mgmtClientsThreadPool.execute(new Runnable() {
 			
 			@Override
 			public void run() {
 				for (String string : registeredAdmins) {
-					try {
-						Socket theAdmin = new Socket(string, properties.getUpdatePort());
-						if (properties.isDebug())
-							System.out.println("connected to server!");
-						updateClientsStatusProtocol(theAdmin.getInputStream(),theAdmin.getOutputStream());
-						BufferedReader in=new BufferedReader(new InputStreamReader(theAdmin.getInputStream()));
-						PrintWriter out=new PrintWriter(theAdmin.getOutputStream());
-						out.println("exit");
-						out.flush();
-						in.close();
-						out.close();
-						theAdmin.close();
-					} catch (IOException e) {
-						// do nothing
-					}
+				syncAdmin(string);
 				}
 
 				}
-
-		private void updateClientsStatusProtocol(InputStream inFromClient, OutputStream outToClient) {
-			try {
-			BufferedReader in=new BufferedReader(new InputStreamReader(inFromClient));
-			PrintWriter out=new PrintWriter(outToClient);
-			out.println("clients push");
-			out.flush();
-			in.readLine();//ready
-			ArrayList<String[]> list = getClientsList();
-			for (String[] strings : list) {
-				for (String string : strings) {
-					System.out.print(string +" ");
-				}
-				System.out.println(" ");
-			}
-			for (String[] strings : list) {
-				out.println(strings.length);
-				System.out.println(strings.length);
-				for (String string : strings) {
-					out.println(string);
-				}
-				out.println("client end");
-			}
-			out.println("list end");
-			out.flush();
-			in.readLine();//done
-			
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			
-				
-			}
-		});	
-		
+		});
 	}
+		
 
 	@Override
 	public void gameServerStop() {
@@ -297,5 +270,25 @@ public class MyConnectionsManager extends CommonConnectionsManager {
 		registeredAdmins.add(hostAddress);
 		
 	}
+
+	public void unregister(String hostAddress) {
+		registeredAdmins.remove(hostAddress);
+		
+	}
+@Override
+	public void kickClients(String[] list) {
+		for (String string : list) {
+			try {
+				System.out.println(string);
+				clientsMap.get(string).close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+	}
+
+
 
 }

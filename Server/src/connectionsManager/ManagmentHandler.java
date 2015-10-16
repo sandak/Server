@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.ArrayList;
 
 import algorithms.mazeGenerators.Maze3d;
 
@@ -32,6 +33,10 @@ public class ManagmentHandler extends CommonClientHandler{
 						serverStop(in,out);
 					if (line.contains("register") )
 						register(socket);
+					if (line.contains("unregister") )
+						unregister(socket);
+					if (line.contains("kick request") )
+						kickRequest(socket);
 				}	
 			in.close();
 			out.close();			
@@ -39,6 +44,41 @@ public class ManagmentHandler extends CommonClientHandler{
 		}catch(IOException e){
 			e.printStackTrace();
 		}
+	}
+
+	private void kickRequest(Socket socket) {
+		try{
+			BufferedReader in=new BufferedReader(new InputStreamReader(socket.getInputStream()));
+			PrintWriter out=new PrintWriter(socket.getOutputStream());
+			out.println("ok");
+			out.flush();
+			in.readLine();
+			out.println("ready");
+			out.flush();
+			String parse = in.readLine();
+			controller.kickClients(parse.split(":"));
+			out.println("done");
+			out.flush();
+			
+			}catch (IOException e)
+			{
+				////
+			}		
+	
+		
+	}
+
+	private void unregister(Socket socket) {
+		try{
+			BufferedReader in=new BufferedReader(new InputStreamReader(socket.getInputStream()));
+			PrintWriter out=new PrintWriter(socket.getOutputStream());
+			controller.unregister(socket.getInetAddress().getHostAddress());
+			out.println("ok");
+			out.flush();
+			}catch (IOException e)
+			{
+				////
+			}		
 	}
 
 	private void register(Socket socket) {
@@ -52,6 +92,7 @@ public class ManagmentHandler extends CommonClientHandler{
 		{
 			////
 		}
+		controller.syncAdmin(socket.getInetAddress().getHostAddress());
 	}
 
 	private void serverStop(BufferedReader in, PrintWriter out) {
@@ -78,5 +119,35 @@ public class ManagmentHandler extends CommonClientHandler{
 	}
 
 
+	public void updateClientsStatusProtocol(InputStream inputStream, OutputStream outputStream) {
+		try {
+			BufferedReader in=new BufferedReader(new InputStreamReader(inputStream));
+			PrintWriter out=new PrintWriter(outputStream);
+			out.println("clients push");
+			out.flush();
+			in.readLine();//ready
+			ArrayList<String[]> list = controller.getClientsList();
+			for (String[] strings : list) {
+				for (String string : strings) {
+					System.out.print(string +" ");
+				}
+				System.out.println(" ");
+			}
+			for (String[] strings : list) {
+				out.println(strings.length);
+				System.out.println(strings.length);
+				for (String string : strings) {
+					out.println(string);
+				}
+				out.println("client end");
+			}
+			out.println("list end");
+			out.flush();
+			in.readLine();//done
 			
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}	
+			}
 }
