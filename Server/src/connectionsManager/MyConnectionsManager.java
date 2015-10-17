@@ -44,10 +44,10 @@ public class MyConnectionsManager extends CommonConnectionsManager {
 		clientsMap = new HashMap<String, Socket>();
 		registeredAdmins = new ArrayList<String>();
 
-		mgmtStart();
+		//mgmtStart();
 	}
 
-	private void mgmtStart() {
+	public void mgmtStart() {
 		serverStop = false;
 		try {
 			mgmtServer = new ServerSocket(properties.getManagmentPort());

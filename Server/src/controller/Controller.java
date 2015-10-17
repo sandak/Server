@@ -33,8 +33,6 @@ public class Controller {
 		this.commandMap = new HashMap<String , Command>();		//inserting all the Commands into the map
 		commandMap.put("generate", new Generate(this));
 		commandMap.put("solve", new Solve(this));
-		commandMap.put("exit", new Exit(this));
-		commandMap.put("propertiesUpdate", new PropertiesUpdate(this));
 					
 		
 	}
@@ -118,6 +116,7 @@ public class Controller {
 
 	public void start() {
 		try {
+			connectionsMgmt.mgmtStart();
 			connectionsMgmt.gameServerStart();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

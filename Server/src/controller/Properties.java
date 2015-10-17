@@ -19,7 +19,6 @@ public class Properties implements Serializable {
 	protected String solveAlgorithm; // maze solving algorithm.
 
 	protected int maxThreads; // max threads.
-	protected String ui; // which ui to present.
 
 	////// Server properties /////////
 	protected int clientPort;
@@ -43,7 +42,6 @@ public class Properties implements Serializable {
 		this.mazeMaxAxisY = 35;
 		this.mazeMaxAxisZ = 35;
 		this.maxThreads = 10;
-		this.ui = "Graphic user interface";
 		this.clientPort = 5400;
 		this.managmentPort = 4040;
 		this.maxClients = 10;
@@ -88,9 +86,7 @@ public class Properties implements Serializable {
 		this.debugMode = debugMode;
 	}
 
-	public void setUi(String ui) {
-		this.ui = ui;
-	}
+
 
 	public void setDebug(boolean debug) {
 		this.debugMode = debug;
@@ -144,9 +140,6 @@ public class Properties implements Serializable {
 		this.maxThreads = maxThreads;
 	}
 
-	public String getUi() {
-		return ui;
-	}
 
 	public int getTimeOut() {
 		return timeOut;
@@ -162,6 +155,11 @@ public class Properties implements Serializable {
 
 	public void setUpdatePort(int updatePort) {
 		this.updatePort = updatePort;
+	}
+
+	@Override
+	public String toString() {
+		return ""+updatePort+" "+timeOut+" "+mazeMaxAxisZ;
 	}
 
 }
