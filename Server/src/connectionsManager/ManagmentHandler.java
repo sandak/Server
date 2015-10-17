@@ -39,6 +39,8 @@ public class ManagmentHandler extends CommonClientHandler{
 						unregister(socket);
 					if (line.contains("kick request") )
 						kickRequest(socket);
+					if (line.contains("shutdown") )
+						shutdown(socket);
 				}	
 			in.close();
 			out.close();			
@@ -46,6 +48,23 @@ public class ManagmentHandler extends CommonClientHandler{
 		}catch(IOException e){
 			e.printStackTrace();
 		}
+	}
+
+	private void shutdown(Socket socket) {
+		try{
+			BufferedReader in=new BufferedReader(new InputStreamReader(socket.getInputStream()));
+			PrintWriter out=new PrintWriter(socket.getOutputStream());
+			out.println("ok");
+			out.flush();
+			controller.exit();
+		
+			
+			
+			}catch (IOException e)
+			{
+				////
+			}			
+		
 	}
 
 	private void getData(Socket socket) {
@@ -204,6 +223,26 @@ public class ManagmentHandler extends CommonClientHandler{
 				out.flush();
 			out.flush();
 			in.readLine();//done
+			
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		
+	}
+
+	public void updateShutdownProtocol(InputStream inputStream, OutputStream outputStream) {
+		try {
+			BufferedReader in=new BufferedReader(new InputStreamReader(inputStream));
+			PrintWriter out=new PrintWriter(outputStream);
+			out.println("status push");
+			out.flush();
+			in.readLine();//ready
+				out.println("offline");
+				out.flush();
+			out.println("shutdown push");
+			out.flush();
+			in.readLine();//ok
 			
 			} catch (IOException e) {
 				// TODO Auto-generated catch block

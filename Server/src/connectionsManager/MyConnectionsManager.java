@@ -26,15 +26,15 @@ public class MyConnectionsManager extends CommonConnectionsManager {
 	ServerSocket mgmtServer;
 	CommonClientHandler clientHandler;
 	CommonClientHandler mgmtHandler;
-	ExecutorService threadPool;
-	ExecutorService mgmtClientsThreadPool;
+	volatile ExecutorService threadPool;
+	volatile ExecutorService mgmtClientsThreadPool;
 	volatile HashMap<String, Socket> clientsMap;
 	volatile ArrayList<String> registeredAdmins;
 	volatile boolean gameServerStop;
 	volatile boolean serverStop;
 	protected Properties properties;
-	Thread mainServerThread;
-	Thread mgmtServerThread;
+	 Thread mainServerThread;
+	 Thread mgmtServerThread;
 
 	public MyConnectionsManager(CommonClientHandler clientHandler, CommonClientHandler mgmtHandler) {
 		this.properties = new Properties();
@@ -169,6 +169,9 @@ public class MyConnectionsManager extends CommonConnectionsManager {
 			case "status":
 				((ManagmentHandler)mgmtHandler).updateStatusProtocol(theAdmin.getInputStream(),theAdmin.getOutputStream());
 				break;
+			case "shutting down":
+				((ManagmentHandler)mgmtHandler).updateShutdownProtocol(theAdmin.getInputStream(),theAdmin.getOutputStream());
+				break;
 			}
 				
 				BufferedReader in=new BufferedReader(new InputStreamReader(theAdmin.getInputStream()));
@@ -213,7 +216,7 @@ public class MyConnectionsManager extends CommonConnectionsManager {
 			// finished
 			boolean allTasksCompleted = false;
 
-			while (!(allTasksCompleted = threadPool.awaitTermination(10, TimeUnit.SECONDS)))
+			while (!(allTasksCompleted = threadPool.awaitTermination(10, TimeUnit.SECONDS)));
 				
 
 			//System.out.println("all the tasks have finished");
@@ -250,7 +253,7 @@ public class MyConnectionsManager extends CommonConnectionsManager {
 			// finished
 			boolean allTasksCompleted = false;
 
-			while (!(allTasksCompleted = mgmtClientsThreadPool.awaitTermination(10, TimeUnit.SECONDS)))
+			while (!(allTasksCompleted = mgmtClientsThreadPool.awaitTermination(5, TimeUnit.SECONDS)));
 				
 
 			System.out.println("all the admin tasks have finished");
@@ -261,10 +264,8 @@ public class MyConnectionsManager extends CommonConnectionsManager {
 			mgmtServer.close();
 			System.out.println("server is safely closed");
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 

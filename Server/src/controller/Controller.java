@@ -32,9 +32,6 @@ public class Controller {
 		
 		this.commandMap = new HashMap<String , Command>();		//inserting all the Commands into the map
 		commandMap.put("generate", new Generate(this));
-		commandMap.put("display", new Display(this));
-		commandMap.put("save", new Save(this));
-		commandMap.put("load", new Load(this));
 		commandMap.put("solve", new Solve(this));
 		commandMap.put("exit", new Exit(this));
 		commandMap.put("propertiesUpdate", new PropertiesUpdate(this));
@@ -181,6 +178,14 @@ public class Controller {
 
 	public void syncAdmins(String string) {
 		connectionsMgmt.syncAdmins(string);
+		
+	}
+
+
+	public void exit() {
+		connectionsMgmt.syncAdmins("shutting down");
+		model.exit();
+		connectionsMgmt.exit();
 		
 	}
 				
