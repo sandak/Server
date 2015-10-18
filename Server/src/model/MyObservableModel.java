@@ -208,7 +208,7 @@ public class MyObservableModel extends ObservableCommonModel {
 
 	@Override
 	public void exit() { // safely terminating the existing threads. Also trying to save and cache all maps.
-		task.cancel();
+		timer.cancel();
 		try {
 			threadPool.shutdown();
 			if (!threadPool.awaitTermination(5, TimeUnit.SECONDS)) {

@@ -33,8 +33,7 @@ public class Controller {
 		this.commandMap = new HashMap<String , Command>();		//inserting all the Commands into the map
 		commandMap.put("generate", new Generate(this));
 		commandMap.put("solve", new Solve(this));
-					
-		
+						
 	}
 
 	

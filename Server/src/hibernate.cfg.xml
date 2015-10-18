@@ -18,5 +18,6 @@
   <property name="cache.provider_class">org.hibernate.cache.NoCacheProvider</property>
   <!-- Echo all executed SQL to stdout -->
   <property name="show_sql">true</property>
+   <mapping resource="MazeDB.hbm.xml"></mapping>
  </session-factory>
 </hibernate-configuration>

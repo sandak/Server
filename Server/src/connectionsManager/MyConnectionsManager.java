@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.TimeUnit;
 
 import org.hibernate.mapping.Set;
@@ -73,9 +74,15 @@ public class MyConnectionsManager extends CommonConnectionsManager {
 							mgmtClientsThreadPool.execute(new Runnable() {
 								@Override
 								public void run() {
+									try {
 									adminsHandled++;
 									System.out.println("\tadmin is connected " + adminsHandled);
 									mgmtHandler.handleClient(someAdmin);
+									someAdmin.close();
+									} catch (IOException e) {
+										// TODO Auto-generated catch block
+										e.printStackTrace();
+									}
 
 								}
 							});
@@ -119,8 +126,7 @@ public class MyConnectionsManager extends CommonConnectionsManager {
 							threadPool.execute(new Runnable() {
 								@Override
 								public void run() {
-									clientsHandled++;
-									System.out.println("\thandling client " + clientsHandled);
+									try {
 									clientsMap.put(someClient.getInetAddress().getHostAddress(), someClient);
 									syncAdmins("clients");
 									syncAdmins("log:new client connected - " + someClient.getInetAddress().getHostAddress());
@@ -128,6 +134,11 @@ public class MyConnectionsManager extends CommonConnectionsManager {
 									clientsMap.remove(someClient.getInetAddress().getHostAddress()); 
 									syncAdmins("clients");
 									syncAdmins("log:client disconnected - "+someClient.getInetAddress().getHostAddress());
+									someClient.close();
+									} catch (IOException e) {
+										// TODO Auto-generated catch block
+										e.printStackTrace();
+									}
 								}
 
 							});
@@ -177,6 +188,7 @@ public class MyConnectionsManager extends CommonConnectionsManager {
 				BufferedReader in=new BufferedReader(new InputStreamReader(theAdmin.getInputStream()));
 				PrintWriter out=new PrintWriter(theAdmin.getOutputStream());
 				out.println("exit");
+				System.out.println("exit in server side");
 				out.flush();
 				in.close();
 				out.close();
@@ -191,6 +203,7 @@ public class MyConnectionsManager extends CommonConnectionsManager {
 	
 	
 	public void syncAdmins(String param) {
+		try{
 		mgmtClientsThreadPool.execute(new Runnable() {
 			
 			@Override
@@ -201,6 +214,10 @@ public class MyConnectionsManager extends CommonConnectionsManager {
 
 				}
 		});
+		}catch(RejectedExecutionException e)
+		{
+			////
+		}
 	}
 		
 
@@ -253,9 +270,17 @@ public class MyConnectionsManager extends CommonConnectionsManager {
 			// finished
 			boolean allTasksCompleted = false;
 
-			while (!(allTasksCompleted = mgmtClientsThreadPool.awaitTermination(5, TimeUnit.SECONDS)));
+			//while (!(allTasksCompleted = mgmtClientsThreadPool.awaitTermination(5, TimeUnit.SECONDS)));
 				
 
+			if (!threadPool.awaitTermination(5, TimeUnit.SECONDS)) {
+				threadPool.shutdownNow();
+				if (properties.isDebugMode())
+					System.out.println("threads terminated violently!");
+			}
+	System.out.println("all the tasks have finished");
+			
+			
 			System.out.println("all the admin tasks have finished");
 
 			mgmtServerThread.join();
