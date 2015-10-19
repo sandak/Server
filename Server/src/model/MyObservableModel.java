@@ -55,7 +55,7 @@ public class MyObservableModel extends ObservableCommonModel {
 			mazeMap = (HashMap<String, Maze3d>) oos.readObject();
 			oos.close();
 			oos = new ObjectInputStream(new GZIPInputStream(new FileInputStream("solutionMap.zip")));
-			solutionMap = (HashMap<String, Solution<Position>>) oos.readObject();
+			solutionMap = (HashMap<Maze3d, Solution<Position>>) oos.readObject();
 		} catch (IOException | ClassNotFoundException e) {
 			if (properties.isDebug())
 				System.out.println("log:starting from scratch maps");
@@ -196,7 +196,7 @@ public class MyObservableModel extends ObservableCommonModel {
 
 	@Override
 	public Solution<Position> getSolution(String mazeName) {
-		Solution<Position> tmp = solutionMap.get(mazeMap.get(mazeName).toString());
+		Solution<Position> tmp = solutionMap.get(mazeMap.get(mazeName));
 
 		if (tmp != null) {
 			return (tmp);
@@ -227,7 +227,7 @@ public class MyObservableModel extends ObservableCommonModel {
 
 	@Override
 	public void solve(String name, String algorithm) {
-		if(solutionMap.get(mazeMap.get(name).toString())==null){			
+		if(solutionMap.get(mazeMap.get(name))==null){			
 		try {
 			controller.syncAdmins("log:solve algorithm started - "+name+ ", "+algorithm);
 			Future<Solution<Position>> solution = threadPool.submit((new Callable<Solution<Position>>() {
@@ -263,7 +263,7 @@ public class MyObservableModel extends ObservableCommonModel {
 				}
 			}));
 
-			solutionMap.put(mazeMap.get(name).toString(), solution.get()); // inserting the Solution
+			solutionMap.put(mazeMap.get(name), solution.get()); // inserting the Solution
 													// into the solution map.
 			controller.syncAdmins("log:solve algorithm ended - "+name+ ", "+algorithm);
 		} catch (IllegalArgumentException t) {		//catching the exception and notifying the presenter accordingly.
