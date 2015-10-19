@@ -4,7 +4,6 @@ import connectionsManager.ManagmentHandler;
 import connectionsManager.MazeClientHandler;
 import connectionsManager.MyConnectionsManager;
 import controller.Controller;
-import controller.Properties;
 import model.Model;
 import model.MyObservableModel;
 

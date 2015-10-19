@@ -1,20 +1,19 @@
-<?xml version="1.0"?>
-<!DOCTYPE hibernate-mapping PUBLIC 
-"-//Hibernate/Hibernate Mapping DTD 3.0//EN"
-"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
-
-<hibernate-mapping>
-    <class name="model.MazeDB" table="mazes">
-        
-        <id name="name" type="string">
-            <column name="name" />
-        </id>
-        <property name="Maze3d" type="serializable">
-            <column name="maze" />
-        </property>
-        <property name="solution" type="serializable">
-            <column name="solution" />
-   
-        </property>
-    </class>
-</hibernate-mapping>
+<?xml version='1.0' encoding='UTF-8'?>  
+<!DOCTYPE hibernate-mapping PUBLIC  
+ "-//Hibernate/Hibernate Mapping DTD 3.0//EN"  
+ "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">  
+  
+ <hibernate-mapping>  
+<class name="model.MazeDB" table="mazes">
+  <id name="name" type="string">
+   <column name="name"/>
+  </id>
+  <property generated="never" lazy="false" name="Maze3d" type="serializable">
+   <column name="maze"/>
+  </property>
+  <property generated="never" lazy="false" name="solution" type="serializable">
+   <column name="solution"/>
+  </property>
+ </class>
+            
+ </hibernate-mapping>  
