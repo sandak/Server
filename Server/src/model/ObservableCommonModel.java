@@ -19,7 +19,7 @@ import controller.Properties;
 public abstract class ObservableCommonModel extends Observable implements Model{
 	
 	protected HashMap<String, Maze3d> mazeMap;						//a name -->> Maze map.
-	protected HashMap<String, Solution<Position>> solutionMap;		//a name -->> solution map.
+	protected HashMap<Maze3d, Solution<Position>> solutionMap;		//a name -->> solution map.
 	protected HashMap<String, Position> charPositionMap;			//a name -->> character position map.
 	protected ExecutorService threadPool;					//thread pool to manage all important threads.
 	protected Properties properties;						//system properties.
@@ -33,7 +33,7 @@ public abstract class ObservableCommonModel extends Observable implements Model{
 	public ObservableCommonModel() {				//Ctor
 		
 		mazeMap = new HashMap<String, Maze3d>();						//new empty maps.
-		solutionMap = new HashMap<String, Solution<Position>>();
+		solutionMap = new HashMap<Maze3d, Solution<Position>>();
 		charPositionMap= new HashMap<String, Position>();
 		
 		threadPool = Executors.newCachedThreadPool(); //default
