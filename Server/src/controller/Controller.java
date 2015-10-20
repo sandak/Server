@@ -187,6 +187,7 @@ public class Controller {
 
 	public void exit() {
 		connectionsMgmt.syncAdmins("shutting down");
+		
 		Timer t = new Timer();
 		TimerTask task = new TimerTask() {
 			
@@ -197,7 +198,7 @@ public class Controller {
 				t.cancel();
 			}
 		};
-		t.scheduleAtFixedRate(task, 1000*60, 1000*5);
+		t.scheduleAtFixedRate(task, 1000*3, 1000*3);
 		
 	}
 				

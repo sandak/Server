@@ -33,10 +33,10 @@ public class ManagmentHandler extends CommonClientHandler{
 						serverStart(in,out);
 					if (line.contains("stop server") )
 						serverStop(in,out);
-					if (line.contains("register") )
-						register(socket);
 					if (line.contains("unregister") )
 						unregister(socket);
+					else if (line.contains("register") )
+						register(socket);
 					if (line.contains("kick request") )
 						kickRequest(socket);
 					if (line.contains("shutdown") )

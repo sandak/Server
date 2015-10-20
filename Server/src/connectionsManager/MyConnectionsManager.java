@@ -105,6 +105,7 @@ public class MyConnectionsManager extends CommonConnectionsManager {
 	public void gameServerStart() {
 		syncAdmins("log:game service started.");
 		gameServerStop = false;
+		syncAdmins("status");
 		try {
 			gameServer = new ServerSocket(properties.getClientPort());
 			gameServer.setSoTimeout(properties.getTimeOut());
@@ -225,6 +226,7 @@ public class MyConnectionsManager extends CommonConnectionsManager {
 	public void gameServerStop() {
 		try {
 			gameServerStop = true;
+			syncAdmins("status");
 			// do not execute jobs in queue, continue to execute running threads
 			//System.out.println("shutting down");
 			syncAdmins("log:shutting down game service");
