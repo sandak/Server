@@ -80,43 +80,49 @@ public class MyObservableModel extends ObservableCommonModel {
 
 	@Override
 	public void generate(String name, int x, int y, int z) {
-		if(controller!=null)
-			this.controller.syncAdmins("log:generate algorithm started - " + name+" " +x+" "+y+ " "+z); 
-		Future<Maze3d> maze = threadPool.submit(new Callable<Maze3d>() {
-
-			@Override
-			public Maze3d call() throws Exception {
-				Maze3dGenerator generator;
-				switch (properties.getGenerateAlgorithm()) {
-					case ("MyMaze3dGenerator"):
-						generator = new MyMaze3dGenerator();
-						break;
-					case ("SimpleGenerator"):
-						generator = new SimpleMaze3dGenerator();
-						break;
-					default:
-						generator = new MyMaze3dGenerator();
+		
+		
+		if(!mazeMap.containsKey(name))
+		{
+			
+		
+			if(controller!=null)
+				this.controller.syncAdmins("log:generate algorithm started - " + name); 
+			Future<Maze3d> maze = threadPool.submit(new Callable<Maze3d>() {
+	
+				@Override
+				public Maze3d call() throws Exception {
+					Maze3dGenerator generator;
+					switch (properties.getGenerateAlgorithm()) {
+						case ("MyMaze3dGenerator"):
+							generator = new MyMaze3dGenerator();
+							break;
+						case ("SimpleGenerator"):
+							generator = new SimpleMaze3dGenerator();
+							break;
+						default:
+							generator = new MyMaze3dGenerator();
+					}
+					return generator.generate(x, y, z);
 				}
-				return generator.generate(x, y, z);
+			});
+	
+			try {
+				if (properties.isDebug()) {
+					System.out.println(maze.get());
+				}
+	
+				mazeMap.put(name, maze.get());			//inserting newly generated maze into the mazeMap.
+				System.out.println(name + " , " + maze.get());
+				charPositionMap.put(name, maze.get().getEntrance());	//updates the position map with the new starting position.
+				setChanged();
+				controller.syncAdmins("log:generate algorithm ended - " + name+" " +x+" "+y+ " "+z);
+				notifyObservers("completedTask maze generated " + name );		//notifying the presenter that the maze was generated.
+			} catch (InterruptedException | ExecutionException e) {
+				// do nothing
+				e.printStackTrace();
 			}
-		});
-
-		try {
-			if (properties.isDebug()) {
-				System.out.println(maze.get());
-			}
-
-			mazeMap.put(name, maze.get());			//inserting newly generated maze into the mazeMap.
-			System.out.println(name + " , " + maze.get());
-			charPositionMap.put(name, maze.get().getEntrance());	//updates the position map with the new starting position.
-			setChanged();
-			controller.syncAdmins("log:generate algorithm ended - " + name+" " +x+" "+y+ " "+z);
-			notifyObservers("completedTask maze generated " + name );		//notifying the presenter that the maze was generated.
-		} catch (InterruptedException | ExecutionException e) {
-			// do nothing
-			e.printStackTrace();
 		}
-
 	}
 
 	protected void saveCash() {
