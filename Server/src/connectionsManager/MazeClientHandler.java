@@ -62,17 +62,23 @@ public class MazeClientHandler extends CommonClientHandler {
 			String name, algorithm;
 			outToClient.println("what is the maze name?");
 			outToClient.flush();
+			
 			name = inFromClient.readLine().split(": ")[1];
 			outToClient.println("what is the algorithm?");
 			outToClient.flush();
 			algorithm = inFromClient.readLine().split(": ")[1];
+			
 			controller.update("solve " + name + " " + algorithm);
+			
 			Solution<Position> solution = controller.getSolution(name); //getting back from the model the solution.
 			
-			if (solution == null)
+			if (solution == null){
+				
 				if(this.controller.getProperties().isDebug())
 					System.out.println("solution error");
+			}
 			else {
+				 
 				outToClient.println("sending");
 				outToClient.flush();
 
@@ -119,7 +125,7 @@ public class MazeClientHandler extends CommonClientHandler {
 			outToClient.println("what is the maze name?");
 			outToClient.flush();
 			name = inFromClient.readLine().split(": ")[1];
-			System.out.println(name);
+			
 			Maze3d maze = controller.getMaze(name); //getting the maze from the model.
 			if (maze == null)
 			{

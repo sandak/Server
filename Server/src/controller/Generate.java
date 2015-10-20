@@ -19,7 +19,7 @@ public class Generate extends CommonCommand {
 	 */
 	@Override
 	public void doCommand(String param) {
-		System.out.println(param);
+		
 		String[] s = param.split(" ");
 		// checks the validity of the parameters
 		if (s[0].equals("3d") && s[1].equals("maze") && s.length > 5) 

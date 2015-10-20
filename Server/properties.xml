@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<java version="1.8.0_60" class="java.beans.XMLDecoder">
+ <object class="controller.Properties">
+  <void property="clientPort">
+   <int>5400</int>
+  </void>
+  <void property="generateAlgorithm">
+   <string>MyMaze3dGenerator</string>
+  </void>
+  <void property="managmentPort">
+   <int>4040</int>
+  </void>
+  <void property="maxClients">
+   <int>10</int>
+  </void>
+  <void property="maxThreads">
+   <int>10</int>
+  </void>
+  <void property="mazeMaxAxisX">
+   <int>35</int>
+  </void>
+  <void property="mazeMaxAxisY">
+   <int>35</int>
+  </void>
+  <void property="mazeMaxAxisZ">
+   <int>35</int>
+  </void>
+  <void property="solveAlgorithm">
+   <string>AstarManhattan</string>
+  </void>
+  <void property="timeOut">
+   <int>10000</int>
+  </void>
+  <void property="updatePort">
+   <int>9003</int>
+  </void>
+ </object>
+</java>
