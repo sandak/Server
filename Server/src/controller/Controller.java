@@ -2,6 +2,11 @@ package controller;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Timer;
+import java.util.TimerTask;
+
+import org.hibernate.cache.spi.TimestampsRegion;
+
 import algorithms.mazeGenerators.Maze3d;
 import algorithms.mazeGenerators.Position;
 import algorithms.search.Solution;
@@ -182,8 +187,17 @@ public class Controller {
 
 	public void exit() {
 		connectionsMgmt.syncAdmins("shutting down");
-		model.exit();
-		connectionsMgmt.exit();
+		Timer t = new Timer();
+		TimerTask task = new TimerTask() {
+			
+			@Override
+			public void run() {
+				model.exit();
+				connectionsMgmt.exit();
+				t.cancel();
+			}
+		};
+		t.scheduleAtFixedRate(task, 1000*60, 1000*5);
 		
 	}
 				

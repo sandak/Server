@@ -270,14 +270,14 @@ public class MyConnectionsManager extends CommonConnectionsManager {
 			// finished
 			boolean allTasksCompleted = false;
 
-			//while (!(allTasksCompleted = mgmtClientsThreadPool.awaitTermination(5, TimeUnit.SECONDS)));
+		while (!(allTasksCompleted = mgmtClientsThreadPool.awaitTermination(5, TimeUnit.SECONDS)));
 				
 
-			if (!threadPool.awaitTermination(5, TimeUnit.SECONDS)) {
-				threadPool.shutdownNow();
-				if (properties.isDebugMode())
-					System.out.println("threads terminated violently!");
-			}
+//			if (!threadPool.awaitTermination(5, TimeUnit.SECONDS)) {
+//				threadPool.shutdownNow();
+//				if (properties.isDebugMode())
+//					System.out.println("threads terminated violently!");
+//			}
 	System.out.println("all the tasks have finished");
 			
 			

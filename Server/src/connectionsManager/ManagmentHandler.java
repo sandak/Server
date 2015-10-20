@@ -203,8 +203,7 @@ public class ManagmentHandler extends CommonClientHandler{
 			in.readLine();//done
 			
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				
 			}	
 			}
 
