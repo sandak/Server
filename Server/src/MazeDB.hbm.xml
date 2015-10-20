@@ -1,10 +1,8 @@
-<?xml version='1.0' encoding='UTF-8'?>  
-<!DOCTYPE hibernate-mapping PUBLIC  
- "-//Hibernate/Hibernate Mapping DTD 3.0//EN"  
- "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">  
-  
- <hibernate-mapping>  
-<class name="model.MazeDB" table="mazes">
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+                                   "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping default-access="field">
+ <class name="model.MazeDB" table="mazes">
   <id name="name" type="string">
    <column name="name"/>
   </id>
@@ -15,5 +13,4 @@
    <column name="solution"/>
   </property>
  </class>
-            
- </hibernate-mapping>  
+</hibernate-mapping>
