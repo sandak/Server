@@ -57,6 +57,14 @@ public interface Model {
 	 */
 	void solve(String name, String algorithm);
 		
+	/**
+	 * using this model to notify the presenter
+	 * @param notify - the parameter.
+	 */
 	void notifyPresenter(String notify);
+	/**
+	 * regular setter for the controller.
+	 * @param controller
+	 */
 	void setController(Controller controller);
 }

@@ -12,6 +12,11 @@ import model.Model;
 import model.MyObservableModel;
 
 
+/**
+ * In charge of starting the server program and initiallize the server's properties.
+ * @author Guy Golan && Amit Sandak
+ *
+ */
 public class BootServer {
 
 	public static void main(String[] args) {
@@ -31,8 +36,8 @@ public class BootServer {
 		
 	
 		Model model = new MyObservableModel();
-		MyConnectionsManager ConnectionsManager = new MyConnectionsManager(new MazeClientHandler(),new ManagmentHandler());
-		Controller controller = new Controller(model, ConnectionsManager);
+		MyConnectionsManager connectionsManager = new MyConnectionsManager(new MazeClientHandler(),new ManagmentHandler());
+		Controller controller = new Controller(model, connectionsManager);
 		controller.setProperties(prop);
 		controller.start();
 		

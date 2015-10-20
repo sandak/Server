@@ -13,33 +13,27 @@ public class Generate extends CommonCommand {
 	}
 
 	/**
-	 * Using the presenter to generate a Maze3d according to the parameters.
+	 * Using the controller to generate a Maze3d according to the parameters.
 	 * 
-	 * @param param
-	 *            - the parameters.
+	 * @param param - the parameters.
 	 */
 	@Override
 	public void doCommand(String param) {
 		System.out.println(param);
 		String[] s = param.split(" ");
-		if (s[0].equals("3d") && s[1].equals("maze") && s.length > 5) // checks
-																		// the
-																		// validity
-																		// of
-																		// the
-																		// parameters
+		// checks the validity of the parameters
+		if (s[0].equals("3d") && s[1].equals("maze") && s.length > 5) 
 		{
 			try {
-				controller.getModel().generate(s[2], Integer.parseInt(s[3]), Integer.parseInt(s[4]),
-						Integer.parseInt(s[5]));
+				controller.getModel().generate(s[2], Integer.parseInt(s[3]), Integer.parseInt(s[4]),Integer.parseInt(s[5]));
 			} catch (NumberFormatException e) {
-
-				// controller.getView().displayError("Invalid parameters.");//
-				// TODO HANDLE ERRORS
+				if(controller.getProperties().isDebug())
+					e.printStackTrace();
+				
 			}
 		} else {
-			// controller.getView().displayError("Missing parameters.");// TODO
-			// HANDLE ERRORS
+			if(controller.getProperties().isDebug())
+				System.out.println("error.");
 		}
 
 	}

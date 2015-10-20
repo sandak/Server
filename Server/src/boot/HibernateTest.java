@@ -11,7 +11,6 @@ import model.MazeDB;
 
 public class HibernateTest {
 
-	@SuppressWarnings("deprecation")
 	public static void main(String[] args) {
 		
 		

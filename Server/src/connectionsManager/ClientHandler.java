@@ -1,15 +1,18 @@
 package connectionsManager;
 
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.Socket;
 
-import controller.Controller;
-
+/**
+ * Used to define/handle different server protocols.
+ * @author Guy Golan && Amit Sandak
+ *
+ */
 public interface ClientHandler {
+	
+	/**
+	 * define and implement the protocol.
+	 * @param socket - the client's socket.
+	 */
 	void handleClient(Socket socket);
-
-
-
 
 }

@@ -28,7 +28,6 @@ import algorithms.search.MazeManhattanDistance;
 import algorithms.search.Searcher;
 import algorithms.search.Solution;
 import algorithms.search.State;
-import controller.Controller;
 
 /**
  *
@@ -41,7 +40,7 @@ public class MyObservableModel extends ObservableCommonModel {
 
 	Timer timer;
 	TimerTask task;
-	
+
 	@SuppressWarnings("unchecked")
 	/**
 	 * Ctor. Tries to get old maps from cached maps , if failed initializing new
@@ -51,7 +50,8 @@ public class MyObservableModel extends ObservableCommonModel {
 		super();
 		ObjectInputStream oos = null;
 		try {
-			oos = new ObjectInputStream(new GZIPInputStream(new FileInputStream("mazeMap.zip"))); // tries to read old cached maps.
+			// tries to read old cached maps on startup.
+			oos = new ObjectInputStream(new GZIPInputStream(new FileInputStream("mazeMap.zip"))); 
 			mazeMap = (HashMap<String, Maze3d>) oos.readObject();
 			oos.close();
 			oos = new ObjectInputStream(new GZIPInputStream(new FileInputStream("solutionMap.zip")));
@@ -70,101 +70,109 @@ public class MyObservableModel extends ObservableCommonModel {
 			}
 		}
 
-			timer = new Timer();
-			task = new TimerTask() {
-					@Override
-					public void run() {	saveCash();}					
-				};
-				timer.scheduleAtFixedRate(task, 100*60*5 , 100*60*5);				
+		timer = new Timer();
+		task = new TimerTask() { // a timerTask that auto-saves the maps on a
+									// constant interval.
+			@Override
+			public void run() {
+				saveCash();
+			}
+		};
+		timer.scheduleAtFixedRate(task, 100 * 60 * 5, 100 * 60 * 5);
 	}
 
 	@Override
 	public void generate(String name, int x, int y, int z) {
-		
-		
-		if(!mazeMap.containsKey(name))
-		{
-			
-		
-			if(controller!=null)
-				this.controller.syncAdmins("log:generate algorithm started - " + name); 
+
+		if (!mazeMap.containsKey(name)) {
+
+			if (controller != null)
+				this.controller.syncAdmins("log:generate algorithm started - " + name);
 			Future<Maze3d> maze = threadPool.submit(new Callable<Maze3d>() {
-	
+
 				@Override
 				public Maze3d call() throws Exception {
 					Maze3dGenerator generator;
 					switch (properties.getGenerateAlgorithm()) {
-						case ("MyMaze3dGenerator"):
-							generator = new MyMaze3dGenerator();
-							break;
-						case ("SimpleGenerator"):
-							generator = new SimpleMaze3dGenerator();
-							break;
-						default:
-							generator = new MyMaze3dGenerator();
+					case ("MyMaze3dGenerator"):
+						generator = new MyMaze3dGenerator();
+						break;
+					case ("SimpleGenerator"):
+						generator = new SimpleMaze3dGenerator();
+						break;
+					default:
+						generator = new MyMaze3dGenerator();
 					}
 					return generator.generate(x, y, z);
 				}
 			});
-	
+
 			try {
 				if (properties.isDebug()) {
 					System.out.println(maze.get());
 				}
-	
-				mazeMap.put(name, maze.get());			//inserting newly generated maze into the mazeMap.
-				System.out.println(name + " , " + maze.get());
-				charPositionMap.put(name, maze.get().getEntrance());	//updates the position map with the new starting position.
+
+				mazeMap.put(name, maze.get()); // inserting newly generated maze
+												// into the mazeMap.
+				if (properties.isDebug())
+					System.out.println(name + " , " + maze.get());
+				// updates the position map with the new starting position.
+				charPositionMap.put(name, maze.get().getEntrance()); 
 				setChanged();
-				controller.syncAdmins("log:generate algorithm ended - " + name+" " +x+" "+y+ " "+z);
-				notifyObservers("completedTask maze generated " + name );		//notifying the presenter that the maze was generated.
+				controller.syncAdmins("log:generate algorithm ended - " + name + " " + x + " " + y + " " + z);
+				// notifying the presenter that the maze was generated.
+				notifyObservers("completedTask maze generated " + name); 
 			} catch (InterruptedException | ExecutionException e) {
-				// do nothing
-				e.printStackTrace();
+				if (properties.isDebug())
+					e.printStackTrace();
 			}
 		}
 	}
 
+	/**
+	 * saving the current mazeMap and solutionMaps to the Hard-drive for backup
+	 * and future use.
+	 */
 	protected void saveCash() {
-		if(properties.isDebug()==true)
+		if (properties.isDebug() == true)
 			controller.syncAdmins("log:saving cash.");
-	ObjectOutputStream oos = null;
-	try {
-		oos = new ObjectOutputStream(new GZIPOutputStream(new FileOutputStream("solutionMap.zip")));
-		oos.writeObject(solutionMap);
-		oos.flush();
-		oos.close();
-	} catch (IOException e) {
-		if (properties.isDebug())
-			e.printStackTrace();
-	} finally {
+		ObjectOutputStream oos = null;
 		try {
+			oos = new ObjectOutputStream(new GZIPOutputStream(new FileOutputStream("solutionMap.zip")));
+			oos.writeObject(solutionMap);
 			oos.flush();
 			oos.close();
 		} catch (IOException e) {
-			// do nothing
-			e.printStackTrace();
+			if (properties.isDebug())
+				e.printStackTrace();
+		} finally {
+			try {
+				oos.flush();
+				oos.close();
+			} catch (IOException e) {
+				if (properties.isDebug())
+					e.printStackTrace();
+			}
 		}
-	}
 
-	try {
-		oos = new ObjectOutputStream(new GZIPOutputStream(new FileOutputStream("mazeMap.zip")));
-		oos.writeObject(mazeMap);
-	} catch (IOException e) {
-
-		if (properties.isDebug())
-			e.printStackTrace();
-	} finally {
 		try {
-			oos.flush();
-			oos.close();
+			oos = new ObjectOutputStream(new GZIPOutputStream(new FileOutputStream("mazeMap.zip")));
+			oos.writeObject(mazeMap);
 		} catch (IOException e) {
-			// do nothing
-			e.printStackTrace();
+
+			if (properties.isDebug())
+				e.printStackTrace();
+		} finally {
+			try {
+				oos.flush();
+				oos.close();
+			} catch (IOException e) {
+				if (properties.isDebug())
+					e.printStackTrace();
+			}
 		}
 	}
-	}	
-	
+
 	@Override
 	public Maze3d getMaze(String name) {
 		Maze3d temp = mazeMap.get(name);
@@ -172,7 +180,7 @@ public class MyObservableModel extends ObservableCommonModel {
 		if (temp != null) {
 			return temp;
 		} else {
-			// return("Unavailable maze!");
+			
 			return null;
 		}
 	}
@@ -199,7 +207,6 @@ public class MyObservableModel extends ObservableCommonModel {
 		return s;
 	}
 
-
 	@Override
 	public Solution<Position> getSolution(String mazeName) {
 		Solution<Position> tmp = solutionMap.get(mazeMap.get(mazeName));
@@ -207,13 +214,14 @@ public class MyObservableModel extends ObservableCommonModel {
 		if (tmp != null) {
 			return (tmp);
 		} else {
-			
+
 			return null;
 		}
 	}
 
 	@Override
-	public void exit() { // safely terminating the existing threads. Also trying to save and cache all maps.
+	public void exit() { // safely terminating the existing threads. Also trying
+							// to save and cache all maps.
 		timer.cancel();
 		try {
 			threadPool.shutdown();
@@ -222,31 +230,30 @@ public class MyObservableModel extends ObservableCommonModel {
 				if (properties.isDebugMode())
 					controller.syncAdmins("log:threads terminated violently!");
 			}
-			
-			
+
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
 		saveCash();
 	}
 
-
 	@Override
 	public void solve(String name, String algorithm) {
-		if(solutionMap.get(mazeMap.get(name))==null){			
-		try {
-			controller.syncAdmins("log:solve algorithm started - "+name+ ", "+algorithm);
-			Future<Solution<Position>> solution = threadPool.submit((new Callable<Solution<Position>>() {
+		if (solutionMap.get(mazeMap.get(name)) == null) {
+			try {
+				controller.syncAdmins("log:solve algorithm started - " + name + ", " + algorithm);
+				Future<Solution<Position>> solution = threadPool.submit((new Callable<Solution<Position>>() {
 
-				@Override
-				public Solution<Position> call() throws IllegalArgumentException {
-					Maze3d tmpMaze = mazeMap.get(name);
-					Searcher<Position> alg;
-					if (tmpMaze != null) {
+					@Override
+					public Solution<Position> call() throws IllegalArgumentException {
+						Maze3d tmpMaze = mazeMap.get(name);
+						Searcher<Position> alg;
+						if (tmpMaze != null) {
 
-						switch (algorithm) // generating a Searcher according to
-											// the parameters.
-						{
+							switch (algorithm) // generating a Searcher
+												// according to
+												// the parameters.
+							{
 							case "BFS":
 								alg = new BFS<Position>();
 								break;
@@ -257,46 +264,48 @@ public class MyObservableModel extends ObservableCommonModel {
 							case "AstarAirDistance":
 								alg = new AStar<Position>(new MazeAirDistance(new State<Position>(tmpMaze.getExit())));
 								break;
-	
-							default:
-								throw new IllegalArgumentException("invalid search algorithm"); 
-																				
-						}
-					} else
-						throw new IllegalArgumentException("unavailable maze"); 
-																			
-					return alg.search(new MazeDomain(tmpMaze));
-				}
-			}));
 
-			solutionMap.put(mazeMap.get(name), solution.get()); // inserting the Solution
-													// into the solution map.
-			controller.syncAdmins("log:solve algorithm ended - "+name+ ", "+algorithm);
-		} catch (IllegalArgumentException t) {		//catching the exception and notifying the presenter accordingly.
-			setChanged();
-			switch (t.getMessage()) {
+							default:
+								throw new IllegalArgumentException("invalid search algorithm");
+
+							}
+						} else
+							throw new IllegalArgumentException("unavailable maze");
+
+						return alg.search(new MazeDomain(tmpMaze));
+					}
+				}));
+
+				solutionMap.put(mazeMap.get(name), solution.get()); // inserting
+																	// the
+																	// Solution
+				// into the solution map.
+				controller.syncAdmins("log:solve algorithm ended - " + name + ", " + algorithm);
+			} catch (IllegalArgumentException t) { // catching the exception and
+													// notifying the presenter
+													// accordingly.
+				setChanged();
+				switch (t.getMessage()) {
 				case ("invalid search algorithm"):
 					notifyObservers("completedTask error " + algorithm+ " is not a valid algorithm!\nvalid algorithms are: BFS, AstarManhattan, AstarAirDistance.");
 				case ("unavailable maze"):
 					notifyObservers("completedTask error '" + name + "' is unavailable maze");
 				default:
 					notifyObservers("completedTask error general error!!");
-			}
+				}
 
-		} catch (InterruptedException e) {
-			if (properties.isDebug()) {
-				controller.syncAdmins("log:solve method interupted.");
-				e.printStackTrace();
+			} catch (InterruptedException e) {
+				if (properties.isDebug()) {
+					controller.syncAdmins("log:solve method interupted.");
+					e.printStackTrace();
+				}
+			} catch (ExecutionException e) {
+				if (properties.isDebug()) {
+					controller.syncAdmins("log:solve method general error.");
+					e.printStackTrace();
+				}
 			}
-		} catch (ExecutionException e) {
-			if (properties.isDebug()) {
-				controller.syncAdmins("log:solve method general error.");
-				e.printStackTrace();
-			}
-		}
 		}
 	}
-
-
 
 }

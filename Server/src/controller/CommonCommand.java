@@ -7,7 +7,7 @@ package controller;
  */
 public abstract class CommonCommand implements Command {
 
-	protected Controller controller;	//the presenter who activated the command.
+	protected Controller controller;	//the controller who activated the command.
 	
 	
 	public CommonCommand(Controller controller) {		//Ctor

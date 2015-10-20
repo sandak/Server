@@ -1,100 +1,105 @@
 package connectionsManager;
 
 import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.ObjectOutputStream;
-import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.SocketException;
 import java.util.ArrayList;
-import java.util.HashMap;
-
 import algorithms.mazeGenerators.Maze3d;
 import algorithms.mazeGenerators.Position;
 import algorithms.search.Solution;
 import algorithms.search.State;
-import controller.Controller;
-import model.Model;
 
-public class MazeClientHandler extends CommonClientHandler{
-	
+/**
+ * The type handling a gamer client. Defines the protocol.
+ * 
+ * @author Guy Golan && Amit Sandak
+ *
+ */
+public class MazeClientHandler extends CommonClientHandler {
+
 	public MazeClientHandler() {
 	}
-	
+
 	@Override
 	public void handleClient(Socket socket) {
-		try{
-			BufferedReader in=new BufferedReader(new InputStreamReader(socket.getInputStream()));
-			PrintWriter out=new PrintWriter(socket.getOutputStream());
+		try {
+			BufferedReader inFromClient = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+			PrintWriter outToClient = new PrintWriter(socket.getOutputStream());
 			String line;
-			while(!(line=in.readLine()).endsWith("exit")){
-				
-					if (line.contains("generate") )
-						generateProtocol(in,out);
-					if (line.contains("get maze") )
-						getMazeProtocol(in,out);
-					if (line.contains("solve maze") )
-						getSolutionProtocol(in,out);
-				}	
-			in.close();
-			out.close();			
-			
-		}catch(SocketException e){
+			// handling the client until received 'exit'.
+			while (!(line = inFromClient.readLine()).endsWith("exit")) {
+
+				if (line.contains("generate"))
+					generateProtocol(inFromClient, outToClient);
+				if (line.contains("get maze"))
+					getMazeProtocol(inFromClient, outToClient);
+				if (line.contains("solve maze"))
+					getSolutionProtocol(inFromClient, outToClient);
+			}
+			inFromClient.close();
+			outToClient.close();
+
+		} catch (SocketException e) {
 			if (controller.getProperties().isDebug())
 				System.out.println("client kicked!");
-		}catch(IOException e){
-			e.printStackTrace();
+		} catch (IOException e) {
+			if (controller.getProperties().isDebug())
+				e.printStackTrace();
 		}
-		
+
 	}
 
-	private void getSolutionProtocol(BufferedReader in, PrintWriter out) {
+	/**
+	 * define the protocol that solves mazes.
+	 * @param inFromClient - input from the client's socket.
+	 * @param outToClient - output from the client's socket.
+	 */
+	private void getSolutionProtocol(BufferedReader inFromClient, PrintWriter outToClient) {
 		try {
-			String name,algorithm;
-			out.println("what is the maze name?");
-			out.flush();
-			name = in.readLine().split(": ")[1];
-			out.println("what is the algorithm?");
-			out.flush();
-				algorithm = in.readLine().split(": ")[1];
-				controller.update("solve "+name+" "+algorithm);
-				Solution<Position> solution = controller.getSolution(name);
+			String name, algorithm;
+			outToClient.println("what is the maze name?");
+			outToClient.flush();
+			name = inFromClient.readLine().split(": ")[1];
+			outToClient.println("what is the algorithm?");
+			outToClient.flush();
+			algorithm = inFromClient.readLine().split(": ")[1];
+			controller.update("solve " + name + " " + algorithm);
+			Solution<Position> solution = controller.getSolution(name); //getting back from the model the solution.
+			
 			if (solution == null)
-				System.out.println("solution error");
-			else
-				{out.println("sending");
-				out.flush();
-				
-//				   ByteArrayOutputStream bos = new ByteArrayOutputStream();
-//			        ObjectOutputStream o = new ObjectOutputStream(bos);
-//			        o.writeObject(solution);
-//			        byte[] buffer =  bos.toByteArray();
-				
-				byte[] buffer = toByteArray(solution);
-//			        
-			    	for (byte b : buffer) 
-						out.write((int)b);		
-					out.write(127);
-					out.flush();
-			        
-		
-		}} catch (IOException e) {
-			// do nothing
-			e.printStackTrace();
-		}
-		
-	}
-	
-	
+				if(this.controller.getProperties().isDebug())
+					System.out.println("solution error");
+			else {
+				outToClient.println("sending");
+				outToClient.flush();
 
+				byte[] buffer = toByteArray(solution);
+
+				for (byte b : buffer)
+					outToClient.write((int) b);
+				outToClient.write(127);
+				outToClient.flush();
+
+			}
+		} catch (IOException e) {
+			if (this.controller.getProperties().isDebug())
+				e.printStackTrace();
+		}
+
+	}
+
+	/**
+	 * converting a Solution(Position) into a byte array. 
+	 * @param solution - a solution containing states over Positions.
+	 * @return b - byte array.
+	 */
 	protected byte[] toByteArray(Solution<Position> solution) {
-		byte[] b=new  byte[3*solution.getArr().size()];
+		byte[] b = new byte[3 * solution.getArr().size()];
 		ArrayList<State<Position>> arr = solution.getArr();
-		int i =0;
+		int i = 0;
 		for (State<Position> statePosition : arr) {
 			b[i++] = statePosition.getState().toByteArray()[0];
 			b[i++] = statePosition.getState().toByteArray()[1];
@@ -103,68 +108,84 @@ public class MazeClientHandler extends CommonClientHandler{
 		return b;
 	}
 
-	private void getMazeProtocol(BufferedReader in, PrintWriter out) {
+	/**
+	 * define the protocol that get mazes from the model.
+	 * @param inFromClient - input from the client's socket.
+	 * @param outToClient - output from the client's socket.
+	 */
+	private void getMazeProtocol(BufferedReader inFromClient, PrintWriter outToClient) {
 		try {
 			String name;
-			out.println("what is the maze name?");
-		out.flush();
-			name = in.readLine().split(": ")[1];
+			outToClient.println("what is the maze name?");
+			outToClient.flush();
+			name = inFromClient.readLine().split(": ")[1];
 			System.out.println(name);
-			Maze3d maze = controller.getMaze(name);
+			Maze3d maze = controller.getMaze(name); //getting the maze from the model.
 			if (maze == null)
-				System.out.println("maze error");
-			else
-				{out.println("sending");
-			out.flush();
-		byte [] buffer = maze.toByteArray();
-		
-		for (byte b : buffer) 
-			out.write((int)b);		
-		out.write(127);
-		out.flush();
-		}} catch (IOException e) {
-			// do nothing
-			e.printStackTrace();
+			{
+				if(this.controller.getProperties().isDebug())
+					System.out.println("maze error");
+			}
+			else {
+				outToClient.println("sending");
+				outToClient.flush();
+				byte[] buffer = maze.toByteArray();
+
+				for (byte b : buffer)
+					outToClient.write((int) b);	//sending the maze to the gamer client in a byte array.
+				outToClient.write(127);
+				outToClient.flush();
+			}
+		} catch (IOException e) {
+			if(this.controller.getProperties().isDebug())
+				e.printStackTrace();
 		}
-		
-		
+
 	}
 
-	private void generateProtocol(BufferedReader in, PrintWriter out) {
+	/**
+	 * define the protocol that generates mazes.
+	 * @param inFromClient - input from the client's socket.
+	 * @param outToClient - output from the client's socket.
+	 */
+	private void generateProtocol(BufferedReader inFromClient, PrintWriter outToClient) {
 
 		try {
 			String parse, name;
-			int x,y,z;
-			out.println("what is the maze name?");
-			out.flush();
-			parse =in.readLine();
-			name = parse.split(": ")[1]	;
-			System.out.println(name);
+			int x, y, z;
+			outToClient.println("what is the maze name?");
+			outToClient.flush();
+			parse = inFromClient.readLine();
+			name = parse.split(": ")[1];
+			if(this.controller.getProperties().isDebug())
+				System.out.println(name);
 			//////////////////
-			out.println("what is the Axis x dimension?");
-			out.flush();
-			parse = in.readLine();
-			System.out.println(parse);
+			outToClient.println("what is the Axis x dimension?");
+			outToClient.flush();
+			parse = inFromClient.readLine();
+			if(this.controller.getProperties().isDebug())
+				System.out.println(parse);
 			x = Integer.parseInt(parse.split(": ")[1]);
 			///////////////////
-			out.println("what is the Axis y dimension?");
-			out.flush();
-			parse = in.readLine();
+			outToClient.println("what is the Axis y dimension?");
+			outToClient.flush();
+			parse = inFromClient.readLine();
 			y = Integer.parseInt(parse.split(": ")[1]);
 			//////////////////
-			out.println("what is the Axis z dimension?");
-			out.flush();
-			parse = in.readLine();
+			outToClient.println("what is the Axis z dimension?");
+			outToClient.flush();
+			parse = inFromClient.readLine();
 			z = Integer.parseInt(parse.split(": ")[1]);
 			///////////
-			controller.update("generate 3d maze " + name + " " +x +" " + y + " " + z);
-			out.println("ok");
-			System.out.println("ok");
-			out.flush();
+			controller.update("generate 3d maze " + name + " " + x + " " + y + " " + z);
+			outToClient.println("ok");
+			if(this.controller.getProperties().isDebug())
+				System.out.println("ok");
+			outToClient.flush();
 		} catch (IOException e) {
-				//do nothing
+			if(this.controller.getProperties().isDebug())
 				e.printStackTrace();
-			}
+		}
 	}
-			
+
 }

@@ -25,9 +25,7 @@ public class Solve extends CommonCommand {
 
 		if (s.length > 1) {
 			controller.getModel().solve(s[0], s[1]);
-		} else {
-			// controller.getView().displayError("Missing parameters.");
-		}
+		} 
 	}
 
 }
